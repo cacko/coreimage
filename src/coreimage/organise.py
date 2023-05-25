@@ -21,12 +21,13 @@ def concat(
     max_size: Optional[int] = None
 ):
     if not dst or not dst.exists():
-        dst = Path(".") / f"collage-{uuid4().hex}.png"
+        dst = Path.cwd()/ f"collage-{uuid4().hex}.png"
     WHITE = [255, 255, 255]
+    
+    print(dst)
 
     images = list(find_images(paths))
     n_images = len(images)
-    print(len(images) / round(math.sqrt(n_images)))
     tiles = concat_vh(
         chunks([*map(
             lambda pil_img: cv2.copyMakeBorder(
