@@ -2,13 +2,15 @@ from pathlib import Path
 import semver
 from setuptools.dist import Distribution as _Distribution
 from setuptools import find_packages, setup
+
 import sys
 
 __name__ = "coreimage"
 
+
 def version():
     if len(sys.argv) > 1 and sys.argv[1] >= "bdist_wheel":
-        init = Path(__file__).parent / "src" / __name__ /   "version.py"
+        init = Path(__file__).parent / "src" / __name__ / "version.py"
         _, v = init.read_text().split(" = ")
         cv = semver.VersionInfo.parse(v.strip('"'))
         nv = f"{cv.bump_patch()}"
