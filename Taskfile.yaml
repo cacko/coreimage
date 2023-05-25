@@ -1,0 +1,42 @@
+# https://taskfile.dev
+
+version: '3'
+
+vars:
+  PROJECT: coreimage
+
+tasks:
+  default:
+    dir: src/
+    cmds:
+      - mamba run --live-stream -n {{.PROJECT}} python -m {{.PROJECT}} {{.CLI_ARGS}}
+    silent: true
+
+  export:
+    desc: export env
+    cmds:
+      - mamba env export --no-builds  -n {{.PROJECT}} > environment.yml
+
+  push:
+    desc: commit and pushes current changes
+    cmds:
+      - git add .  || true
+      - git commit -am "$(curl -s https://commit.cacko.net/index.txt)" || true
+      - git push || true
+
+  build:
+    desc: build
+    cmds:
+      - mamba run --live-stream -n {{.PROJECT}} python setup.py bdist_wheel
+
+  publish:
+    desc: publish
+    cmds:
+      - scp dist/* muzak:/var/www/pypi/packages/{{.PROJECT}}
+
+  deploy:
+    desc: all
+    cmds:
+      - task: push
+      - task: build
+      - task: publish
