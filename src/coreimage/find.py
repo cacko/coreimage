@@ -9,4 +9,10 @@ def find_images(src: list[Path]):
         if all([pth.is_file(), IMAGE_EXT.is_allowed(pth.suffix)]):
             yield pth.as_posix()
         elif pth.is_dir():
-            yield from map(lambda f: pth / f, iglob("*.png", root_dir=pth.as_posix()))
+            yield from map(
+                lambda f: pth / f,
+                filter(
+                    lambda fn: IMAGE_EXT.endwith(fn),
+                    iglob("*.*", root_dir=pth.as_posix())
+                )
+            )

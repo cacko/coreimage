@@ -44,7 +44,7 @@ def text(s: str) -> PT_FormattedText:
 class MenuItem(BaseModel):
     text: str
     cmd: Command
-    task_icon: Optional[TaskIcon] = Field(default=TaskIcon.OFF)
+    task_icon: TaskIcon = Field(default=TaskIcon.OFF)
     disabled: Optional[str] = None
 
     class Config:

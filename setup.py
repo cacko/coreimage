@@ -11,8 +11,8 @@ __name__ = "coreimage"
 def version():
     if len(sys.argv) > 1 and sys.argv[1] >= "bdist_wheel":
         init = Path(__file__).parent / "src" / __name__ / "version.py"
-        _, v = init.read_text().split(" = ")
-        cv = semver.VersionInfo.parse(v.strip('"'))
+        _, v = init.read_text().split("=")
+        cv = semver.VersionInfo.parse(v.strip().strip('"'))
         nv = f"{cv.bump_patch()}"
         init.write_text(f'__version__ = "{nv}"')
         return nv
@@ -49,6 +49,9 @@ setup(
         "questionary>=1.10.0",
         "pyfiglet>=0.8.post1",
         "pygments>=2.15.1",
+        "emoji>=2.4.0",
+        "pydantic>=1.10.8",
+        "six>=1.16.0"
     ],
     setup_requires=["wheel", "semver"],
     python_requires=">=3.11",

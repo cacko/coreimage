@@ -49,7 +49,7 @@ def main_menu(ctx: click.Context):
         click.clear()
         banner(txt=f"{__name__} {__version__}", color="bright_blue")
         menu_items = [
-            ConcatQuery(text="Concat", value="concat", task_icon=TaskIcon.CONCAT, cmd=cli_concat),
+            ConcatQuery(text="Concat", task_icon=TaskIcon.CONCAT, cmd=cli_concat),
         ] + [MenuItem(text="Exit", cmd=quit)]
         with Menu(menu_items, title="Select task") as item:  # type: ignore
             if isinstance(item, QueryTask):
@@ -64,16 +64,14 @@ def main_menu(ctx: click.Context):
 
 @cli.command("concat", short_help="concat")
 @click.option("-p", "--path", multiple=True)
-@click.option("-o", "--output")
-@click.option("-s", "--max_size")
+@click.option("-o", "--output", default=".")
 @click.pass_context
 def cli_concat(
     ctx: click.Context,
     path: list[str],
-    output: Optional[str] = None,
-    max_size: Optional[int] = None
+    output: str,
 ):
-    concat([Path(p) for p in path], output, max_size)
+    concat([Path(p) for p in path], Path(output))
 
 
 def run():
