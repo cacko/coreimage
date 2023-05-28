@@ -30,7 +30,6 @@ class Concat:
             if dst and dst.exists():
                 dst_root = dst if dst.is_dir() else dst.parent
                 dst_name = dst.name if dst.is_file() else dst_name
-
             self.__output_path = dst_root / dst_name
         return self.__output_path
 
