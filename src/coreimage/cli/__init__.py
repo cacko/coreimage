@@ -6,7 +6,7 @@ import logging
 from pyfiglet import Figlet
 from coreimage.cli.interactive.menu import Menu
 from coreimage.cli.interactive.models import TaskIcon
-from coreimage.organise import concat
+from coreimage.organise import Concat
 from coreimage.cli.interactive.items import ConcatQuery, MenuItem, QueryTask
 from coreimage.version import __version__
 
@@ -71,7 +71,7 @@ def cli_concat(
     path: list[str],
     output: str,
 ):
-    concat([Path(p) for p in path], Path(output))
+    Concat(Path(output)).concat_from_paths([Path(p) for p in path])
 
 
 def run():
