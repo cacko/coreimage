@@ -116,11 +116,12 @@ class Concat:
                           for img in row]
             yield row_images
 
-    def concat_from_paths(self, paths: list[Path]):
+    def concat_from_paths(self, paths: list[Path]) -> Path:
         images = [Image.open(p) for p in find_images(paths)]
         return self.concat_from_images(images)
 
-    def concat_from_images(self, images: list[Image.Image]):
+    def concat_from_images(self, images: list[Image.Image]) -> Path:
         self.__images = images
         tiles = self.concat_vh(list(self.normalize()))
-        return cv2.imwrite(self.output_path.as_posix(), tiles)
+        cv2.imwrite(self.output_path.as_posix(), tiles)
+        return self.output_path
