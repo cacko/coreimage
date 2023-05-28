@@ -27,6 +27,7 @@ tasks:
   build:
     desc: build
     cmds:
+      - rm -rf dist/*
       - mamba run --live-stream -n {{.PROJECT}} python setup.py bdist_wheel
 
   publish:

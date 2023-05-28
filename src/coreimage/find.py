@@ -12,7 +12,7 @@ def find_images(src: list[Path]):
             yield from map(
                 lambda f: pth / f,
                 filter(
-                    lambda fn: IMAGE_EXT.endwith(fn),
+                    lambda fn: IMAGE_EXT.is_allowed((pth / fn).suffix),
                     iglob("*.*", root_dir=pth.as_posix())
                 )
             )
