@@ -28,7 +28,7 @@ class Concat:
             dst_root = Path.cwd()
             dst_name = f"collage-{uuid4().hex}.png"
             if dst and dst.exists():
-                dst_root = dst if dst.is_dir() else dst_root
+                dst_root = dst if dst.is_dir() else dst.parent
                 dst_name = dst.name if dst.is_file() else dst_name
 
             self.__output_path = dst_root / dst_name
