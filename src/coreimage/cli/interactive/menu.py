@@ -48,7 +48,7 @@ class Menu(object, metaclass=MenuMeta):
 
         options = [
             Choice(
-                title=x.display,
+                title=x.display,  # type: ignore
                 value=x.value,
                 disabled=x.disabled
             )

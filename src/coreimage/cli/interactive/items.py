@@ -97,14 +97,8 @@ class ConcatQuery(QueryTask):
             validate=lambda x: Path(x).is_dir() or IMAGE_EXT.endwith(x)
         ).ask()
         answers["output"] = questionary.path(
-            message="OIutput directory",
-            validate=lambda x: Path(x).suffix == '.csv',
+            message="Output destination",
             only_directories=True).ask()
-        answers["max_sioze"] = questionary.text(
-            message="desired heigjt of the images",
-            validate=lambda x: f"{x}".isnumeric()
-
-        )
         return answers
 
 
