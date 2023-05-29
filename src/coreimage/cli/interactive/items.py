@@ -92,10 +92,10 @@ class ConcatQuery(QueryTask):
     def get_input(self):
         answers = {}
 
-        answers["path"] = questionary.path(
+        answers["path"] = [questionary.path(
             message="images or directory with iamges",
             validate=lambda x: Path(x).is_dir() or IMAGE_EXT.endwith(x)
-        ).ask()
+        ).ask()]
         answers["output"] = questionary.path(
             message="Output destination",
             only_directories=True).ask()
