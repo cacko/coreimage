@@ -58,5 +58,5 @@ class Concat:
                 img_index = i * cols + j
                 if img_index < len(resized_images):
                     collage.paste(resized_images[img_index], (j * max_width, i * max_height))
-        collage.save(self.output_path.as_posix())task 
+        collage.save(self.output_path.as_posix()) 
         return self.output_path
