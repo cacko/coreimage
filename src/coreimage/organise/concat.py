@@ -1,11 +1,12 @@
 
+from functools import reduce
+import pprint
 from typing import Optional
 from coreimage.find import find_images
 from coreimage.utils import IMAGE_EXT, pil_to_mat
 from pathlib import Path
 from uuid import uuid4
 from PIL import Image
-from cv2_collage_v2 import create_collage_v2
 
 
 class Concat:
@@ -36,12 +37,26 @@ class Concat:
         return self.concat_from_images([Image.open(p) for p in find_images(paths)])
 
     def concat_from_images(self, images: list[Image.Image]) -> Path:
-        create_collage_v2(
-            [pil_to_mat(pil) for pil in images],
-            maxwidth=3000,
-            heightdiv=6,
-            widthdiv=2,
-            background=(0, 0, 0),
-            save_path=self.output_path.as_posix(),
-        )
+        maxwidth, maxheight = reduce(lambda mx, im: [max(mx[0], im.width), max(mx[1], im.height)], images, [0, 0])
+        cols = 4
+        rows = round(len(images) / 4)
+        # Resize images to be the same size
+        resized_images = []
+        max_height = max([img.size[1] for img in images])
+        max_width = max([img.size[0] for img in images])
+        for img in images:
+            resized_images.append(img.resize((max_width, max_height)))
+
+        # Create the blank canvas
+        collage_width = max_width * cols
+        collage_height = max_height * rows
+        collage = Image.new('RGB', (collage_width, collage_height))
+
+        # Paste the images onto the canvas
+        for i in range(rows):
+            for j in range(cols):
+                img_index = i * cols + j
+                if img_index < len(resized_images):
+                    collage.paste(resized_images[img_index], (j * max_width, i * max_height))
+        collage.save(self.output_path.as_posix())task 
         return self.output_path
