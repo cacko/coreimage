@@ -1,5 +1,4 @@
 
-import logging
 from typing import Optional
 from coreimage.find import find_images
 from coreimage.utils import IMAGE_EXT, pil_to_mat
@@ -31,7 +30,6 @@ class Concat:
             if not dst_root.exists():
                 dst_root.mkdir(parents=True)
             self.__output_path = dst_root / dst_name
-        logging.warn(self.__output_path)
         return self.__output_path
 
     def concat_from_paths(self, paths: list[Path]) -> Path:
