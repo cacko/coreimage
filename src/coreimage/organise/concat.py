@@ -1,9 +1,8 @@
 
 from functools import reduce
-import pprint
 from typing import Optional
 from coreimage.find import find_images
-from coreimage.utils import IMAGE_EXT, pil_to_mat
+from coreimage.utils import IMAGE_EXT
 from pathlib import Path
 from uuid import uuid4
 from PIL import Image
@@ -58,5 +57,5 @@ class Concat:
                 img_index = i * cols + j
                 if img_index < len(resized_images):
                     collage.paste(resized_images[img_index], (j * max_width, i * max_height))
-        collage.save(self.output_path.as_posix()) 
+        collage.save(self.output_path.as_posix())
         return self.output_path
