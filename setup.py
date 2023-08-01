@@ -52,7 +52,7 @@ setup(
         "emoji>=2.4.0",
         "pydantic>=1.10.8",
         "cv2-collage-v2>=0.11",
-        "corelog"
+        "corelog>0.0.11"
     ],
     setup_requires=["wheel", "semver"],
     python_requires=">=3.11",
