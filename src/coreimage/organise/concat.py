@@ -79,9 +79,17 @@ class Concat:
     def concat_from_paths(self, paths: list[Path]) -> Path:
         return self.concat_from_images([Image.open(p) for p in find_images(paths)])
 
-    def makeCollage(self, imgList, spacing=0, antialias=False, background=(0, 0, 0), aspectratiofactor=1.0):
+    def makeCollage(
+            self,
+            imgList,
+            spacing=0,
+            antialias=False,
+            background=(0, 0, 0),
+            aspectratiofactor=1.0,
+            max_height=500
+    ):
 
-        maxHeight = max([img.height for img in imgList])
+        maxHeight = min(max([img.height for img in imgList]), max_height)
         if antialias:
             imgList = [img.resize((int(img.width / img.height * maxHeight), maxHeight),
                                   Image.ANTIALIAS) if img.height < maxHeight else img for img in imgList]
