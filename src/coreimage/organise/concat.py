@@ -96,9 +96,8 @@ class Concat:
         else:
             imgList = [img.resize((int(img.width / img.height * maxHeight), maxHeight))
                        if img.height > maxHeight else img for img in imgList]
-
         # generate the input for the partition problem algorithm
-        # need list of aspect ratios and number of rows (partitions)
+        # need list of aspect ratios and number of r[ows (partitions)
         # imgHeights = [img.height for img in imgList]
         totalWidth = sum([img.width for img in imgList])
         avgWidth = totalWidth / len(imgList)
