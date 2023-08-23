@@ -15,7 +15,7 @@ tasks:
   export:
     desc: export env
     cmds:
-      - mamba env export --no-builds  -n {{.PROJECT}} > environment.yml
+      - conda env export --no-builds  -n {{.PROJECT}} > environment.yml
 
   push:
     desc: commit and pushes current changes
