@@ -92,10 +92,10 @@ class Concat:
         maxHeight = min(max([img.height for img in imgList]), max_height)
         if antialias:
             imgList = [img.resize((int(img.width / img.height * maxHeight), maxHeight),
-                                  Image.ANTIALIAS) if img.height < maxHeight else img for img in imgList]
+                                  Image.ANTIALIAS) if img.height > maxHeight else img for img in imgList]
         else:
             imgList = [img.resize((int(img.width / img.height * maxHeight), maxHeight))
-                       if img.height < maxHeight else img for img in imgList]
+                       if img.height > maxHeight else img for img in imgList]
 
         # generate the input for the partition problem algorithm
         # need list of aspect ratios and number of rows (partitions)
