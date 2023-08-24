@@ -96,9 +96,6 @@ class Concat:
         else:
             imgList = [img.resize((int(img.width / img.height * maxHeight), maxHeight))
                        if img.height > maxHeight else img for img in imgList]
-        # generate the input for the partition problem algorithm
-        # need list of aspect ratios and number of r[ows (partitions)
-        # imgHeights = [img.height for img in imgList]
         totalWidth = sum([img.width for img in imgList])
         avgWidth = totalWidth / len(imgList)
         targetWidth = avgWidth * math.sqrt(len(imgList) * aspectratiofactor)
@@ -153,29 +150,6 @@ class Concat:
         return outImg
 
     def concat_from_images(self, images: list[Image.Image]) -> Path:
-        # max_width, max_height = reduce(
-        #     lambda mx, im: [max(mx[0], im.width), max(mx[1], im.height)],
-        #     images,
-        #     [0, 0]
-        # )
-        # cols = 4
-        # rows = round(len(images) / 4)
-        # # Resize images to be the same size
-        # resized_images = []
-        # for img in images:
-        #     resized_images.append(img.resize((max_width, max_height)))
-
-        # # Create the blank canvas
-        # collage_width = max_width * cols
-        # collage_height = max_height * rows
-        # collage = Image.new('RGB', (collage_width, collage_height))
-
-        # # Paste the images onto the canvas
-        # for i in range(rows):
-        #     for j in range(cols):
-        #         img_index = i * cols + j
-        #         if img_index < len(resized_images):
-        #             collage.paste(resized_images[img_index], (j * max_width, i * max_height))
         collage = self.makeCollage(images)
         if self.output_path.suffix in [".jpg", ".jpeg"]:
             collage = collage.convert("RGB")
