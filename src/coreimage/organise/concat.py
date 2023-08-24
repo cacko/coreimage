@@ -77,7 +77,12 @@ class Concat:
         return self.__output_path
 
     def concat_from_paths(self, paths: list[Path]) -> Path:
-        return self.concat_from_images([Image.open(p) for p in find_images(paths)])
+        def loader():
+            for p in find_images(paths):
+                with p.open("rb") as fp:
+                    yield Image.open(fp)
+
+        return self.concat_from_images([p for p in loader()])
 
     def makeCollage(
             self,
