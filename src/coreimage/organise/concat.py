@@ -177,5 +177,7 @@ class Concat:
         #         if img_index < len(resized_images):
         #             collage.paste(resized_images[img_index], (j * max_width, i * max_height))
         collage = self.makeCollage(images)
+        if self.output_path.suffix in [".jpg", ".jpeg"]:
+            collage = collage.convert("RGB")
         collage.save(self.output_path.as_posix())
         return self.output_path
