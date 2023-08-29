@@ -80,7 +80,9 @@ class Concat:
         def loader():
             for p in find_images(paths):
                 with p.open("rb") as fp:
-                    yield Image.open(fp)
+                    img = Image.open(fp)
+                    img.load()
+                    yield img
 
         return self.concat_from_images([p for p in loader()])
 

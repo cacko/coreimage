@@ -11,6 +11,10 @@ class IMAGE_EXT(StrEnum):
     WEBP = "webp"
 
     @classmethod
+    def get_suffixes(cls) -> list[str]:
+        return [f".{ex}" for ex in cls.__members__.values()]
+
+    @classmethod
     def is_allowed(cls, ext: str) -> bool:
         return ext.lower().lstrip(".") in cls.__members__.values()
 
