@@ -80,13 +80,15 @@ class Concat:
 
     def concat_from_paths(self, paths: list[Path]) -> tuple[Path, str]:
         def loader():
-            self.__hash = ""
+            names = []
             for p in find_images(paths):
                 with p.open("rb") as fp:
-                    self.__hash = sha1(f"{self.__hash}{p.name}".encode()).hexdigest()
+                    names.append(p.name)
                     img = Image.open(fp)
                     img.load()
                     yield img
+            ids = "-".join(sorted(names))
+            self.__hash = sha1(ids.encode()).hexdigest()
 
         return self.concat_from_images([p for p in loader()])
 
