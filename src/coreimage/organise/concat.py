@@ -78,7 +78,7 @@ class Concat:
             self.__output_path = dst_root / dst_name
         return self.__output_path
 
-    def concat_from_paths(self, paths: list[Path]) -> Path:
+    def concat_from_paths(self, paths: list[Path]) -> tuple[Path, str]:
         def loader():
             self.__hash = ""
             for p in find_images(paths):
