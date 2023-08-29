@@ -71,7 +71,8 @@ def cli_concat(
     path: list[str],
     output: str,
 ):
-    Concat(Path(output)).concat_from_paths([Path(p) for p in path])
+    outpath, hash = Concat(Path(output)).concat_from_paths([Path(p) for p in path])
+    output(f"-> {outpath} / {hash}")
 
 
 def run():

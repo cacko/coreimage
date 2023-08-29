@@ -7,6 +7,7 @@ from uuid import uuid4
 from PIL import Image
 import math
 from operator import itemgetter
+from hashlib import sha1
 
 
 def linear_partition(seq, k, dataList=None):
@@ -55,6 +56,7 @@ def clamp(v, ll, h):
 class Concat:
 
     __output_path: Optional[Path] = None
+    __hash: str = ""
 
     def __init__(
         self,
@@ -78,8 +80,10 @@ class Concat:
 
     def concat_from_paths(self, paths: list[Path]) -> Path:
         def loader():
+            self.__hash = ""
             for p in find_images(paths):
                 with p.open("rb") as fp:
+                    self.__hash = sha1(f"{self.__hash}{p.name}".encode()).hexdigest()
                     img = Image.open(fp)
                     img.load()
                     yield img
@@ -153,12 +157,11 @@ class Concat:
             yPos += max([img.height for img in row]) + spacing
             xPos = 0
             continue
-
         return outImg
 
-    def concat_from_images(self, images: list[Image.Image]) -> Path:
+    def concat_from_images(self, images: list[Image.Image]) -> tuple[Path, str]:
         collage = self.makeCollage(images)
         if self.output_path.suffix in [".jpg", ".jpeg"]:
             collage = collage.convert("RGB")
         collage.save(self.output_path.as_posix())
-        return self.output_path
+        return (self.output_path, self.__hash)
