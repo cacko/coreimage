@@ -51,7 +51,6 @@ setup(
         "pygments>=2.15.1",
         "emoji>=2.4.0",
         "pydantic>=1.10.8",
-        "cv2-collage-v2>=0.11",
         "corelog>0.0.11",
         "corefile>=0.1.5"
     ],
