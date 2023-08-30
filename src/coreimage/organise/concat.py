@@ -99,16 +99,18 @@ class Concat:
             antialias=False,
             background=(0, 0, 0),
             aspectratiofactor=1.0,
-            max_height=500
+            max_height=300
     ):
+        imgList = [img.resize((int(img.width / img.height * max_height), max_height), Image.LANCZOS)
+                   if img.height > max_height else img for img in imgList]
 
-        maxHeight = min(max([img.height for img in imgList]), max_height)
+        maxHeight = max([img.height for img in imgList])
         if antialias:
             imgList = [img.resize((int(img.width / img.height * maxHeight), maxHeight),
-                                  Image.ANTIALIAS) if img.height > maxHeight else img for img in imgList]
+                                  Image.ANTIALIAS) if img.height < maxHeight else img for img in imgList]
         else:
             imgList = [img.resize((int(img.width / img.height * maxHeight), maxHeight))
-                       if img.height > maxHeight else img for img in imgList]
+                       if img.height < maxHeight else img for img in imgList]
         totalWidth = sum([img.width for img in imgList])
         avgWidth = totalWidth / len(imgList)
         targetWidth = avgWidth * math.sqrt(len(imgList) * aspectratiofactor)

@@ -64,14 +64,14 @@ def main_menu(ctx: click.Context):
 
 @cli.command("concat", short_help="concat")
 @click.option("-p", "--path", multiple=True)
-@click.option("-o", "--output", default=".")
+@click.option("-o", "--savepath", default=".")
 @click.pass_context
 def cli_concat(
     ctx: click.Context,
     path: list[str],
-    output: str,
+    savepath: str,
 ):
-    outpath, hash = Concat(Path(output)).concat_from_paths([Path(p) for p in path])
+    outpath, hash = Concat(Path(savepath)).concat_from_paths([Path(p) for p in path])
     output(f"-> {outpath} / {hash}")
 
 
