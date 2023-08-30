@@ -96,11 +96,12 @@ class Concat:
     def makeCollage(
             self,
             imgList,
-            spacing=20,
+            spacing=10,
             background=(0, 0, 0),
-            aspectratiofactor=0.315,
             max_width=500
     ):
+        aspectratiofactor = max(0.315, 4 / len(imgList)),
+
         [img.thumbnail((randint(300, max_width), img.height), Image.Resampling.LANCZOS)
          if img.width > max_width else img for img in imgList
          ]
@@ -120,17 +121,14 @@ class Concat:
         else:
             aspectRatios = [int(img.width / img.height * 100) for img in imgList]
 
-            # get nested list of images (each sublist is a row in the collage)
             imgRows = linear_partition(aspectRatios, numRows, imgList)
 
-            # scale down larger rows to match the minimum row width
             rowWidths = [sum([img.width + spacing for img in row]) - spacing for row in imgRows]
             minRowWidth = min(rowWidths)
             rowWidthRatios = [minRowWidth / w for w in rowWidths]
             imgRows = [[img.resize((int(img.width * widthRatio), int(img.height * widthRatio)))
                         for img in row] for row, widthRatio in zip(imgRows, rowWidthRatios)]
 
-        # pupulate new image
         rowWidths = [sum([img.width + spacing for img in row]) - spacing for row in imgRows]
         rowHeights = [max([img.height for img in row]) for row in imgRows]
         minRowWidth = min(rowWidths)
