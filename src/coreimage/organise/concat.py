@@ -99,10 +99,12 @@ class Concat:
             antialias=False,
             background=(0, 0, 0),
             aspectratiofactor=1.0,
-            max_height=300
+            max_width=500
     ):
-        imgList = [img.resize((int(img.width / img.height * max_height), max_height), Image.LANCZOS)
-                   if img.height > max_height else img for img in imgList]
+        imgList = [img.resize(
+            (max_width, int(img.height / img.width * max_width), ), Image.LANCZOS)
+            for img in imgList
+        ]
 
         maxHeight = max([img.height for img in imgList])
         if antialias:
