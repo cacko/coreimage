@@ -95,10 +95,10 @@ class Concat:
     def makeCollage(
             self,
             imgList,
-            spacing=0,
+            spacing=20,
             antialias=False,
             background=(0, 0, 0),
-            aspectratiofactor=1.0,
+            aspectratiofactor=0.56,
             max_width=500
     ):
         imgList = [img.resize(
