@@ -8,6 +8,7 @@ from PIL import Image
 import math
 from operator import itemgetter
 from hashlib import sha1
+from random import randint
 
 
 def linear_partition(seq, k, dataList=None):
@@ -96,23 +97,17 @@ class Concat:
             self,
             imgList,
             spacing=20,
-            antialias=False,
             background=(0, 0, 0),
-            aspectratiofactor=0.56,
+            aspectratiofactor=0.315,
             max_width=500
     ):
-        imgList = [img.resize(
-            (max_width, int(img.height / img.width * max_width), ), Image.LANCZOS)
-            for img in imgList
-        ]
+        [img.thumbnail((randint(300, max_width), img.height), Image.Resampling.LANCZOS)
+         if img.width > max_width else img for img in imgList
+         ]
 
         maxHeight = max([img.height for img in imgList])
-        if antialias:
-            imgList = [img.resize((int(img.width / img.height * maxHeight), maxHeight),
-                                  Image.ANTIALIAS) if img.height < maxHeight else img for img in imgList]
-        else:
-            imgList = [img.resize((int(img.width / img.height * maxHeight), maxHeight))
-                       if img.height < maxHeight else img for img in imgList]
+        imgList = [img.resize((int(img.width / img.height * maxHeight), maxHeight))
+                   if img.height < maxHeight else img for img in imgList]
         totalWidth = sum([img.width for img in imgList])
         avgWidth = totalWidth / len(imgList)
         targetWidth = avgWidth * math.sqrt(len(imgList) * aspectratiofactor)
@@ -132,15 +127,8 @@ class Concat:
             rowWidths = [sum([img.width + spacing for img in row]) - spacing for row in imgRows]
             minRowWidth = min(rowWidths)
             rowWidthRatios = [minRowWidth / w for w in rowWidths]
-            if antialias:
-                imgRows = [[
-                    img.resize(
-                        (int(img.width * widthRatio), int(img.height * widthRatio)), Image.ANTIALIAS
-                    )
-                    for img in row] for row, widthRatio in zip(imgRows, rowWidthRatios)]
-            else:
-                imgRows = [[img.resize((int(img.width * widthRatio), int(img.height * widthRatio)))
-                            for img in row] for row, widthRatio in zip(imgRows, rowWidthRatios)]
+            imgRows = [[img.resize((int(img.width * widthRatio), int(img.height * widthRatio)))
+                        for img in row] for row, widthRatio in zip(imgRows, rowWidthRatios)]
 
         # pupulate new image
         rowWidths = [sum([img.width + spacing for img in row]) - spacing for row in imgRows]
