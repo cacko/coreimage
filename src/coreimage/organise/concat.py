@@ -100,7 +100,7 @@ class Concat:
             background=(0, 0, 0),
             max_width=500
     ):
-        aspectratiofactor = max(1.3, 4 / len(imgList))
+        aspectratiofactor = max(1.5, 4 / len(imgList))
 
         [img.thumbnail((randint(300, max_width), img.height), Image.Resampling.LANCZOS)
          if img.width > max_width else img for img in imgList
