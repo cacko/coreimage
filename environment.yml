@@ -120,7 +120,7 @@ dependencies:
       - pillow==9.5.0
       - prompt-toolkit==3.0.38
       - pycodestyle==2.10.0
-      - pydantic==2.3.0
+      - pydantic==1.10.0
       - pydantic-core==2.6.3
       - pydicom==2.3.1
       - pyfiglet==0.8.post1

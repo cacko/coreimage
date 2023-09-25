@@ -50,7 +50,7 @@ setup(
         "pyfiglet>=0.8.post1",
         "pygments>=2.15.1",
         "emoji>=2.4.0",
-        "pydantic>=2.3",
+        "pydantic>=1.10",
         "corelog>0.0.11",
         "corefile>=0.1.5"
     ],
