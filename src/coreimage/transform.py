@@ -29,7 +29,7 @@ def normalize(
 
 def get_qrcode(
     data: Any,
-    box_area: Optional[int] = 20,
+    box_area: Optional[int] = 16,
     border: Optional[int] = 1,
     fill_color: Optional[str] = "black",
     back_color: Optional[str] = "white",

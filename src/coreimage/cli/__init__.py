@@ -94,7 +94,7 @@ def cli_icat(
 @cli.command("qrcode", short_help="icat")
 @click.argument("data", nargs=-1)
 @click.option("-o", "--output")
-@click.option("--size", default=20)
+@click.option("--size", default=16)
 @click.option("--border", default=1)
 @click.option("--fill-color", default="black")
 @click.option("--back-color", default="white")
