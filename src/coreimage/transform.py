@@ -3,6 +3,15 @@ from typing import Any, Optional
 from PIL import Image
 from .utils import round8
 import qrcode
+from qrcode.constants import ERROR_CORRECT_H, ERROR_CORRECT_L, ERROR_CORRECT_M, ERROR_CORRECT_Q
+from enum import IntEnum
+
+
+class ERROR_CORRECTION(IntEnum):
+    LOW = ERROR_CORRECT_L
+    MID = ERROR_CORRECT_M
+    HIGH = ERROR_CORRECT_Q
+    EXTREME = ERROR_CORRECT_H
 
 
 def normalize(
@@ -29,9 +38,9 @@ def get_qrcode(
 
     qr = qrcode.QRCode(
         version=1,
-        error_correction=qrcode.constants.ERROR_CORRECT_L,
         box_size=box_area,
         border=border,
+        **kwds
     )
     qr.add_data(data)
     qr.make(fit=True)
