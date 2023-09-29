@@ -93,6 +93,7 @@ def cli_icat(
 
 @cli.command("qrcode", short_help="icat")
 @click.argument("data", nargs=-1)
+@click.option("-o", "--output")
 @click.option("--size", default=20)
 @click.option("--border", default=1)
 @click.option("--fill-color", default="black")
@@ -101,11 +102,14 @@ def cli_icat(
 def cli_qrcode(
     ctx: click.Context,
     data: list[str],
+    output: str,
     size: int,
     border: int,
     fill_color: str,
     back_color: str
 ):
+    out_path = Path(output)
+    assert out_path.parent.exists()
     code_image = get_qrcode(
         " ".join(data),
         box_area=size,
@@ -113,6 +117,7 @@ def cli_qrcode(
         fill_color=fill_color,
         back_color=back_color
     )
+    code_image.save(out_path.as_posix())
     output = get_kitty_image(image=code_image)
     print(output)
 
