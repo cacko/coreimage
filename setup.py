@@ -52,7 +52,9 @@ setup(
         "emoji>=2.4.0",
         "pydantic>=1.10",
         "corelog>0.0.11",
-        "corefile>=0.1.5"
+        "corefile>=0.1.5",
+        "term-image>=0.8.0.dev0",
+        "qrcode>=7.4.2"
     ],
     setup_requires=["wheel", "semver"],
     python_requires=">=3.11",

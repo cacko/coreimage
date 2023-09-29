@@ -9,6 +9,8 @@ from coreimage.cli.interactive.models import TaskIcon
 from coreimage.organise import Concat
 from coreimage.cli.interactive.items import ConcatQuery, MenuItem, QueryTask
 from coreimage.version import __version__
+from coreimage.terminal import get_kitty_image
+from coreimage.transform import get_qrcode
 
 
 def banner(txt: str, color: str = "bright_green"):
@@ -73,6 +75,46 @@ def cli_concat(
 ):
     outpath, hash = Concat(Path(savepath)).concat_from_paths([Path(p) for p in path])
     output(f"-> {outpath} / {hash}")
+
+
+@cli.command("icat", short_help="icat")
+@click.argument("path")
+@click.pass_context
+def cli_icat(
+    ctx: click.Context,
+    path: str,
+):
+    ip = Path(path)
+    assert ip.exists()
+    assert ip.is_file()
+    output = get_kitty_image(image_path=ip)
+    print(output)
+
+
+@cli.command("qrcode", short_help="icat")
+@click.argument("data", nargs=-1)
+@click.option("--size", default=20)
+@click.option("--border", default=1)
+@click.option("--fill-color", default="black")
+@click.option("--back-color", default="white")
+@click.pass_context
+def cli_qrcode(
+    ctx: click.Context,
+    data: list[str],
+    size: int,
+    border: int,
+    fill_color: str,
+    back_color: str
+):
+    code_image = get_qrcode(
+        " ".join(data),
+        box_area=size,
+        border=border,
+        fill_color=fill_color,
+        back_color=back_color
+    )
+    output = get_kitty_image(image=code_image)
+    print(output)
 
 
 def run():
