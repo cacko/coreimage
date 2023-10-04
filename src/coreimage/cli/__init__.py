@@ -10,7 +10,7 @@ from coreimage.organise import Concat
 from coreimage.cli.interactive.items import ConcatQuery, MenuItem, QueryTask
 from coreimage.version import __version__
 from coreimage.terminal import get_kitty_image
-from coreimage.transform import get_qrcode
+from coreimage.qrcode import get_qrcode, get_geo
 
 
 def banner(txt: str, color: str = "bright_green"):
@@ -91,13 +91,11 @@ def cli_icat(
     print(output)
 
 
-@cli.command("qrcode", short_help="icat")
+@cli.command("qrcode", short_help="qrcode")
 @click.argument("data", nargs=-1)
 @click.option("-o", "--output")
 @click.option("--size", default=16)
 @click.option("--border", default=1)
-@click.option("--fill-color", default="black")
-@click.option("--back-color", default="white")
 @click.pass_context
 def cli_qrcode(
     ctx: click.Context,
@@ -105,20 +103,43 @@ def cli_qrcode(
     output: str,
     size: int,
     border: int,
-    fill_color: str,
-    back_color: str
 ):
     out_path = Path(output)
     assert out_path.parent.exists()
     code_image = get_qrcode(
         " ".join(data),
         box_area=size,
-        border=border,
-        fill_color=fill_color,
-        back_color=back_color
+        border=border
     )
     code_image.save(out_path.as_posix())
     output = get_kitty_image(image=code_image)
+    print(output)
+
+
+@cli.command("qrgeo", short_help="qrgeo", context_settings={"ignore_unknown_options": True})
+@click.argument("lat", type=float)
+@click.argument("lng", type=float)
+@click.option("-o", "--output")
+@click.option("--size", default=16)
+@click.option("--border", default=1)
+@click.pass_context
+def cli_qrgeo(
+    ctx: click.Context,
+    lat: float,
+    lng: float,
+    output: str,
+    size: int,
+    border: int,
+):
+    out_path = Path(output)
+    assert out_path.parent.exists()
+    code_image = get_geo(
+        lat, lng,
+        box_area=size,
+        border=border
+    )
+    code_image.save(out_path.as_posix())
+    output = get_kitty_image(image=code_image, height=20)
     print(output)
 
 
