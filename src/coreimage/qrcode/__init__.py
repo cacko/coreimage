@@ -1,7 +1,6 @@
-from enum import IntEnum
+from enum import StrEnum
 import segno
 from segno.helpers import make_email, make_geo, make_vcard, make_wifi
-from segno.consts import ERROR_LEVEL_H, ERROR_LEVEL_L, ERROR_LEVEL_M, ERROR_LEVEL_Q
 from typing import Optional, Any
 from PIL import Image
 from io import BytesIO
@@ -16,11 +15,11 @@ __all__ = [
 ]
 
 
-class ERROR_CORRECTION(IntEnum):
-    LOW = ERROR_LEVEL_L
-    MID = ERROR_LEVEL_M
-    HIGH = ERROR_LEVEL_Q
-    EXTREME = ERROR_LEVEL_H
+class ERROR_CORRECTION(StrEnum):
+    LOW = "L"
+    MID = "M"
+    HIGH = "Q"
+    EXTREME = "H"
 
 
 def qr_to_pil(
