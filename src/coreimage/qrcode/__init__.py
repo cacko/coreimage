@@ -4,15 +4,10 @@ from segno.helpers import make_email, make_geo, make_vcard, make_wifi
 from typing import Optional, Any
 from PIL import Image
 from io import BytesIO
-from qrcode.constants import ERROR_CORRECT_H, ERROR_CORRECT_L, ERROR_CORRECT_M, ERROR_CORRECT_Q
-import qrcode
+
 
 __all__ = [
     "get_qrcode",
-    "get_wifi",
-    "get_email",
-    "get_geo",
-    "get_vcard"
 ]
 
 
@@ -23,41 +18,70 @@ class ERROR(StrEnum):
     EXTREME = "H"
 
 
-MAP_ERRORS = {
-    ERROR.LOW: ERROR_CORRECT_L,
-    ERROR.MID: ERROR_CORRECT_M,
-    ERROR.HIGH: ERROR_CORRECT_Q,
-    ERROR.EXTREME: ERROR_CORRECT_H
-}
+class Code:
 
+    def __init__(
+        self,
+        content: Any,
+        scale=16,
+        border=4,
+        error: Optional[ERROR] = None
+    ) -> None:
+        self.__content = content
+        self.__scale = scale
+        self.__border = border
+        self.__error = error
 
-def qr_to_pil(
+    def __to_pil(
+        self,
         qr: segno.QRCode,
-        scale: Optional[int] = 16,
-        border: Optional[int] = 4
-) -> Image.Image:
-    qr_data = BytesIO()
-    qr.save(out=qr_data, kind='png', scale=scale, border=border)
-    return Image.open(qr_data)
+    ) -> Image.Image:
+        qr_data = BytesIO()
+        qr.save(
+            out=qr_data,
+            kind='png',
+            scale=self.__scale,
+            border=self.__border
+        )
+        return Image.open(qr_data)
 
+    def __parse_content(self) -> dict[str, str]:
+        print(self.__content)
+        parts = self.__content[1:]
+        args = {k: v for k, v in map(lambda p: p.split("=", 1), parts)}
+        return args
 
-def get_qrcode_legacy(
-    data: Any,
-    box_area: Optional[int] = 16,
-    border: Optional[int] = 1,
-    **kwds
-) -> Image.Image:
+    def gen_wifi(self) -> Image.Image:
+        qr = make_wifi(**self.__parse_content())
+        return self.__to_pil(qr)
 
-    qr = qrcode.QRCode(
-        version=1,
-        box_size=box_area,
-        border=border,
-        **kwds
-    )
-    qr.add_data(data)
-    qr.make(fit=True)
+    def gen_email(self) -> Image.Image:
+        qr = make_email(**self.__parse_content())
+        return self.__to_pil(qr)
 
-    return qr.make_image().get_image()
+    def gen_geo(self) -> Image.Image:
+        args = self.__parse_content()
+        lat = float(args.get("lat", 0))
+        lng = float(args.get("lng", 0))
+        qr = make_geo(lat=lat, lng=lng)
+        return self.__to_pil(qr)
+
+    def gen_vcard(self) -> Image.Image:
+        qr = make_vcard(**self.__parse_content())
+        return self.__to_pil(qr)
+
+    def gen(self):
+        try:
+            generator_name = self.__content[0].strip(":")
+            assert generator_name
+            generator = f"gen_{generator_name}"
+            assert hasattr(self, generator)
+            assert callable(getattr(self, generator, None))
+            return getattr(self, generator)()
+        except AssertionError:
+            self.__content = " ".join(self.__content)
+            qr = segno.make_qr(self.__content, error=self.__error)
+            return self.__to_pil(qr)
 
 
 def get_qrcode(
@@ -66,100 +90,10 @@ def get_qrcode(
     border: Optional[int] = 4,
     **kwds
 ) -> Image.Image:
-
-    qr = segno.make_qr(data, **kwds)
-    return qr_to_pil(qr, scale=box_area, border=border)
-
-
-def get_wifi(
-    ssid: str,
-    password: Optional[str] = None,
-    security: Optional[str] = None,
-    hidden: Optional[bool] = None,
-    box_area: Optional[int] = 16,
-    border: Optional[int] = 4,
-) -> Image.Image:
-    qr = make_wifi(
-        ssid=ssid,
-        password=password,
-        security=security,
-        hidden=hidden,
+    code = Code(
+        content=data,
+        scale=box_area,
+        border=border,
+        **kwds
     )
-    return qr_to_pil(qr, scale=box_area, border=border)
-
-
-def get_email(
-    to: str,
-    cc: Optional[str] = None,
-    bcc: Optional[str] = None,
-    subject: Optional[str] = None,
-    body: Optional[str] = None,
-    box_area: Optional[int] = 16,
-    border: Optional[int] = 4,
-) -> Image.Image:
-    qr = make_email(
-        to=to,
-        cc=cc,
-        bcc=bcc,
-        subject=subject,
-        body=body,
-    )
-    return qr_to_pil(qr, scale=box_area, border=border)
-
-
-def get_geo(
-    lat: float,
-    lng: float,
-    box_area: Optional[int] = 16,
-    border: Optional[int] = 4,
-) -> Image.Image:
-    qr = make_geo(lat=lat, lng=lng)
-    return qr_to_pil(qr, scale=box_area, border=border)
-
-
-def get_vcard(
-    name,
-    displayname,
-    email=None,
-    phone=None,
-    fax=None,
-    videophone=None,
-    memo=None,
-    nickname=None,
-    birthday=None,
-    url=None,
-    pobox=None,
-    street=None,
-    city=None,
-    region=None,
-    zipcode=None,
-    country=None,
-    org=None,
-    lat=None,
-    lng=None,
-    source=None,
-    rev=None,
-    title=None,
-    photo_uri=None,
-    cellphone=None,
-    homephone=None,
-    workphone=None,
-    box_area: Optional[int] = 16,
-    border: Optional[int] = 4,
-) -> Image.Image:
-    qr = make_vcard(
-        name, displayname, email=email,
-        phone=phone, fax=fax,
-        videophone=videophone, memo=memo,
-        nickname=nickname, birthday=birthday,
-        url=url, pobox=pobox, street=street,
-        city=city, region=region,
-        zipcode=zipcode, country=country,
-        org=org, lat=lat, lng=lng,
-        source=source, rev=rev, title=title,
-        photo_uri=photo_uri,
-        cellphone=cellphone,
-        homephone=homephone,
-        workphone=workphone,
-    )
-    return qr_to_pil(qr, scale=box_area, border=border)
+    return code.gen()

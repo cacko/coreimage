@@ -54,7 +54,6 @@ setup(
         "corelog>0.0.11",
         "corefile>=0.1.5",
         "term-image>=0.8.0.dev0",
-        "qrcode>=7.4.2",
         "segno>=1.5.2"
     ],
     setup_requires=["wheel", "semver"],
