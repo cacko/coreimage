@@ -78,14 +78,12 @@ def get_wifi(
     hidden: Optional[bool] = None,
     box_area: Optional[int] = 16,
     border: Optional[int] = 4,
-    *kwds
 ) -> Image.Image:
     qr = make_wifi(
         ssid=ssid,
         password=password,
         security=security,
         hidden=hidden,
-        *kwds
     )
     return qr_to_pil(qr, scale=box_area, border=border)
 
@@ -98,15 +96,13 @@ def get_email(
     body: Optional[str] = None,
     box_area: Optional[int] = 16,
     border: Optional[int] = 4,
-    *kwds
 ) -> Image.Image:
     qr = make_email(
-        to=to, 
-        cc=cc, 
-        bcc=bcc, 
-        subject=subject, 
+        to=to,
+        cc=cc,
+        bcc=bcc,
+        subject=subject,
         body=body,
-        *kwds
     )
     return qr_to_pil(qr, scale=box_area, border=border)
 
@@ -116,9 +112,8 @@ def get_geo(
     lng: float,
     box_area: Optional[int] = 16,
     border: Optional[int] = 4,
-    *kwds
 ) -> Image.Image:
-    qr = make_geo(lat=lat, lng=lng, *kwds)
+    qr = make_geo(lat=lat, lng=lng)
     return qr_to_pil(qr, scale=box_area, border=border)
 
 
@@ -151,7 +146,6 @@ def get_vcard(
     workphone=None,
     box_area: Optional[int] = 16,
     border: Optional[int] = 4,
-    *kwds
 ) -> Image.Image:
     qr = make_vcard(
         name, displayname, email=email,
@@ -167,6 +161,5 @@ def get_vcard(
         cellphone=cellphone,
         homephone=homephone,
         workphone=workphone,
-        *kwds
     )
     return qr_to_pil(qr, scale=box_area, border=border)
