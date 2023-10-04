@@ -1,6 +1,11 @@
 from enum import StrEnum
 import segno
-from segno.helpers import make_email, make_geo, make_vcard, make_wifi
+from segno.helpers import (
+    make_make_email_data,
+    make_geo_data,
+    make_vcard_data,
+    make_wifi_data
+)
 from typing import Optional, Any
 from PIL import Image
 from io import BytesIO
@@ -52,22 +57,26 @@ class Code:
         return args
 
     def gen_wifi(self) -> Image.Image:
-        qr = make_wifi(**self.__parse_content())
+        data = make_wifi_data(**self.__parse_content())
+        qr = segno.make_qr(data, error=self.__error)
         return self.__to_pil(qr)
 
     def gen_email(self) -> Image.Image:
-        qr = make_email(**self.__parse_content())
+        data = make_make_email_data(**self.__parse_content())
+        qr = segno.make_qr(data, error=self.__error)
         return self.__to_pil(qr)
 
     def gen_geo(self) -> Image.Image:
         args = self.__parse_content()
         lat = float(args.get("lat", 0))
         lng = float(args.get("lng", 0))
-        qr = make_geo(lat=lat, lng=lng)
+        data = make_geo_data(lat=lat, lng=lng)
+        qr = segno.make_qr(data, error=self.__error)
         return self.__to_pil(qr)
 
     def gen_vcard(self) -> Image.Image:
-        qr = make_vcard(**self.__parse_content())
+        data = make_vcard_data(**self.__parse_content())
+        qr = segno.make_qr(data, error=self.__error)
         return self.__to_pil(qr)
 
     def gen(self):
