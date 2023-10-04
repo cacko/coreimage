@@ -95,7 +95,7 @@ def cli_icat(
 @click.argument("data", nargs=-1)
 @click.option("-o", "--output")
 @click.option("--size", default=16)
-@click.option("--border", default=1)
+@click.option("--border", default=4)
 @click.pass_context
 def cli_qrcode(
     ctx: click.Context,
@@ -121,7 +121,7 @@ def cli_qrcode(
 @click.argument("lng", type=float)
 @click.option("-o", "--output")
 @click.option("--size", default=16)
-@click.option("--border", default=1)
+@click.option("--border", default=4)
 @click.pass_context
 def cli_qrgeo(
     ctx: click.Context,

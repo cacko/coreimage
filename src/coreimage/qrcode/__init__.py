@@ -4,7 +4,8 @@ from segno.helpers import make_email, make_geo, make_vcard, make_wifi
 from typing import Optional, Any
 from PIL import Image
 from io import BytesIO
-
+from qrcode.constants import ERROR_CORRECT_H, ERROR_CORRECT_L, ERROR_CORRECT_M, ERROR_CORRECT_Q
+import qrcode
 
 __all__ = [
     "get_qrcode",
@@ -15,11 +16,19 @@ __all__ = [
 ]
 
 
-class ERROR_CORRECTION(StrEnum):
+class ERROR(StrEnum):
     LOW = "L"
     MID = "M"
     HIGH = "Q"
     EXTREME = "H"
+
+
+MAP_ERRORS = {
+    ERROR.LOW: ERROR_CORRECT_L,
+    ERROR.MID: ERROR_CORRECT_M,
+    ERROR.HIGH: ERROR_CORRECT_Q,
+    ERROR.EXTREME: ERROR_CORRECT_H
+}
 
 
 def qr_to_pil(
@@ -30,6 +39,25 @@ def qr_to_pil(
     qr_data = BytesIO()
     qr.save(out=qr_data, kind='png', scale=scale, border=border)
     return Image.open(qr_data)
+
+
+def get_qrcode_legacy(
+    data: Any,
+    box_area: Optional[int] = 16,
+    border: Optional[int] = 1,
+    **kwds
+) -> Image.Image:
+
+    qr = qrcode.QRCode(
+        version=1,
+        box_size=box_area,
+        border=border,
+        **kwds
+    )
+    qr.add_data(data)
+    qr.make(fit=True)
+
+    return qr.make_image().get_image()
 
 
 def get_qrcode(
