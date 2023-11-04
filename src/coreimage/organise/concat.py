@@ -153,7 +153,7 @@ class Concat:
 
     def concat_from_images(self, images: list[Image.Image]) -> tuple[Path, str]:
         collage = self.makeCollage(images)
-        if self.output_path.suffix in [".jpg", ".jpeg"]:
+        if self.output_path.suffix.lower() in [".jpg", ".jpeg"]:
             collage = collage.convert("RGB")
         collage.save(self.output_path.as_posix())
         return (self.output_path, self.__hash)
