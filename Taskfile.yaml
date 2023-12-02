@@ -21,7 +21,7 @@ tasks:
     desc: commit and pushes current changes
     cmds:
       - git add .  || true
-      - git commit -am "$(curl -s https://commit.cacko.net/index.txt)" || true
+      - gcom || true
       - git push || true
 
   build:

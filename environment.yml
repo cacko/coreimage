@@ -117,11 +117,11 @@ dependencies:
       - opencv-contrib-python==4.7.0.72
       - packaging==23.1
       - photocollage==1.4.5
-      - pillow==9.5.0
+      - pillow==10.1.0
       - prompt-toolkit==3.0.38
       - pycodestyle==2.10.0
-      - pydantic==1.10.0
-      - pydantic-core==2.6.3
+      - pydantic==2.5.0
+      - pydantic-core==2.14.1
       - pydicom==2.3.1
       - pyfiglet==0.8.post1
       - pyflakes==3.0.1
@@ -132,18 +132,18 @@ dependencies:
       - pywavelets==1.4.1
       - qrcode==7.4.2
       - questionary==1.10.0
-      - rectangle-packer==2.0.1
+      - rectangle-packer==2.0.2
       - requests==2.31.0
       - rich==13.3.5
       - scipy==1.10.1
       - semver==3.0.0
       - six==1.16.0
       - structlog==23.1.0
-      - term-image==0.8.0.dev0
+      - term-image==0.8.0
       - tifffile==2023.4.12
       - tolerant-isinstance==0.10
       - touchtouch==0.11
       - tzdata==2023.3
       - urllib3==2.0.2
       - wcwidth==0.2.6
-prefix: /Volumes/Devo/Users/jago/mambaforge/envs/coreimage
+prefix: /Volumes/Devo/Users/jago/miniforge3/envs/coreimage
