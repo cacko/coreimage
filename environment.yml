@@ -106,7 +106,7 @@ dependencies:
       - click==8.1.3
       - colorama==0.4.6
       - corefile==0.1.5
-      - corelog==0.0.11
+      - corelog==0.0.12
       - create-empty-image==0.10
       - emoji==2.4.0
       - fs==2.4.16
