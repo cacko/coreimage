@@ -5,6 +5,7 @@ from coreimage.utils import IMAGE_EXT
 from pathlib import Path
 from uuid import uuid4
 from PIL import Image
+from PIL.ImageOps import exif_transpose
 import math
 from operator import itemgetter
 from hashlib import sha1
@@ -154,6 +155,6 @@ class Concat:
     def concat_from_images(self, images: list[Image.Image]) -> tuple[Path, str]:
         collage = self.makeCollage(images)
         if self.output_path.suffix.lower() in [".jpg", ".jpeg"]:
-            collage = collage.convert("RGB")
+            collage = exif_transpose(collage.convert("RGB"))
         collage.save(self.output_path.as_posix())
         return (self.output_path, self.__hash)
