@@ -30,7 +30,7 @@ def get_term_image(
     **kwds
 ):
     try:
-        with get_image(next(filter(None, [image, image_path])), **kwds) as kitty_image:
+        with get_image(next(filter(lambda x: x is not None, [image, image_path])), **kwds) as kitty_image:
             fmt = kwds.get("fmt", "{:1.1#}")
             yield fmt.format(kitty_image)
     finally:
