@@ -25,7 +25,6 @@ class Distribution(_Distribution):
     def is_pure(self):
         return True
 
-
 setup(
     name=__name__,
     version=version(),
