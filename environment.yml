@@ -52,7 +52,6 @@ dependencies:
   - liblapacke=3.9.0
   - libnghttp2=1.52.0
   - libopenblas=0.3.21
-  - libopencv=4.7.0
   - libopus=1.3.1
   - libpng=1.6.39
   - libprotobuf=3.21.12
@@ -71,8 +70,6 @@ dependencies:
   - mypy_extensions=1.0.0
   - ncurses=6.3
   - nettle=3.8.1
-  - numpy=1.24.3
-  - opencv=4.7.0
   - openh264=2.3.1
   - openssl=3.1.0
   - p11-kit=0.24.1
@@ -80,7 +77,6 @@ dependencies:
   - pip=23.1.2
   - pixman=0.40.0
   - psutil=5.9.5
-  - py-opencv=4.7.0
   - python=3.11.3
   - python_abi=3.11
   - readline=8.2
@@ -107,6 +103,7 @@ dependencies:
       - colorama==0.4.6
       - corefile==0.1.5
       - corelog==0.0.12
+      - corestring==0.3.1
       - create-empty-image==0.10
       - emoji==2.4.0
       - fs==2.4.16
@@ -114,7 +111,8 @@ dependencies:
       - isiter==0.10
       - markdown-it-py==2.2.0
       - mdurl==0.1.2
-      - opencv-contrib-python==4.7.0.72
+      - numpy==1.26.3
+      - opencv-python==4.9.0.80
       - packaging==23.1
       - photocollage==1.4.5
       - pillow==10.1.0
@@ -136,8 +134,10 @@ dependencies:
       - requests==2.31.0
       - rich==13.3.5
       - scipy==1.10.1
+      - segno==1.6.0
       - semver==3.0.0
       - six==1.16.0
+      - stringcase==1.2.0
       - structlog==23.1.0
       - term-image==0.8.0
       - tifffile==2023.4.12

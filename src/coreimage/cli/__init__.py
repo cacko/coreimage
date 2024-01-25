@@ -99,16 +99,27 @@ def cli_icat(
 @click.option("-w", "--width", type=int)
 @click.option("-h", "--height", type=int)
 @click.option("-p", "--padding", type=int)
+@click.option("-fi", "--face_index", type=int)
+@click.option("-fp", "--face_percentage", type=int)
 @click.pass_context
 def cli_cropface(
     ctx: click.Context,
     path: Path,
-    width: Optional[int]  = None,
-    height: Optional[int]  = None,
+    width: Optional[int] = None,
+    height: Optional[int] = None,
     padding: Optional[int] = None,
-    output: Optional[Path]  = None,
+    output: Optional[Path] = None,
+    face_index: Optional[int] = None,
+    face_percentage: Optional[int] = None,
 ):
-    crop = Cropper(path, width=width, height=height, padding=padding)
+    crop = Cropper(
+        path,
+        width=width,
+        height=height,
+        padding=padding,
+        face_idx=face_index,
+        face_percent=face_percentage,
+    )
     crop_path = crop.crop(output)
     with get_kitty_image(image_path=crop_path, height=20) as output:
         print(output)

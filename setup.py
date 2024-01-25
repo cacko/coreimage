@@ -52,6 +52,7 @@ setup(
         "pydantic>=1.10",
         "corelog>0.0.11",
         "corefile>=0.1.5",
+        "corestring>0.3",
         "term-image>=0.8.0.dev0",
         "segno>=1.5.2"
     ],

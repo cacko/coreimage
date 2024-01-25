@@ -1,12 +1,10 @@
-from pydoc import classname
-from tkinter import N
 from typing import Optional
 from PIL import Image
 from pathlib import Path
 from coreimage.resources import HAARCASCADE_XML
 from PIL.ImageOps import exif_transpose
 import itertools
-
+from corestring import to_int
 import cv2
 import numpy as np
 from PIL import Image
@@ -22,15 +20,21 @@ INPUT_FILETYPES = PILLOW_FILETYPES + [s.upper() for s in PILLOW_FILETYPES]
 
 class Cropper:
     __image: Optional[np.ndarray] = None
+    DEFAULT_WIDTH = 640
+    DEFAULT_HEIGHT = 640
+    DEFAULT_FACE_PERCENTAGE = 50
+    DEFAULT_PADDING = 1
 
     def __init__(
         self,
         path: Path,
-        width=0,
-        height=0,
+        width=640,
+        height=640,
         face_percent=50,
-        padding=0,
+        padding=None,
         resize=True,
+        face_idx=None,
+        blur=True,
     ):
         self.img_path = path
         img_height, img_width = self.image.shape[:2]
@@ -38,18 +42,14 @@ class Cropper:
             height = img_height
         if not width:
             width = img_width
-        self.height = self.__class__.check_positive_scalar(height)
-        self.width = self.__class__.check_positive_scalar(width)
-        self.padding = padding
+        self.height = to_int(height, self.DEFAULT_HEIGHT)
+        self.width = to_int(width, self.DEFAULT_WIDTH)
+        self.padding = (max(self.width, self.height) // 20) * to_int(padding, self.DEFAULT_PADDING)
+        self.face_percent = to_int(face_percent, self.DEFAULT_FACE_PERCENTAGE)
         self.aspect_ratio = width / height
         self.resize = resize
-
-        # Face percent
-        if face_percent > 100 or face_percent < 1:
-            fp_error = "The face_percent argument must be between 1 and 100"
-            raise ValueError(fp_error)
-        self.face_percent = self.__class__.check_positive_scalar(face_percent)
-
+        self.face_idx = to_int(face_idx, -1)
+        self.blur = blur
         self.casc_path = HAARCASCADE_XML.as_posix()
 
     @property
@@ -70,7 +70,6 @@ class Cropper:
 
     @staticmethod
     def distance(pt1, pt2):
-        """Returns the euclidian distance in 2D between 2 pts."""
         distance = np.linalg.norm(pt2 - pt1)
         return distance
 
@@ -93,18 +92,6 @@ class Cropper:
         num = np.dot(dap, dp)
         return (num / denom) * db + b1
 
-    def __bgr_to_rbg(self):
-        if self.image.ndim == 2:
-            return self.image
-        return self.image[:, :, [2, 1, 0]]
-
-    @staticmethod
-    def check_positive_scalar(num):
-        """Returns True if value if a positive scalar."""
-        if num > 0 and not isinstance(num, str) and np.isscalar(num):
-            return int(num)
-        raise ValueError("A positive scalar is required")
-
     def crop(self, out: Optional[Path] = None) -> Path:
         if not out:
             out = (
@@ -122,19 +109,28 @@ class Cropper:
 
         face_cascade = cv2.CascadeClassifier(self.casc_path)
 
-        faces = face_cascade.detectMultiScale(
+        faces: list = face_cascade.detectMultiScale(
             gray,
             scaleFactor=1.1,
             minNeighbors=5,
             minSize=(minface, minface),
             flags=cv2.CASCADE_FIND_BIGGEST_OBJECT | cv2.CASCADE_DO_ROUGH_SEARCH,
-        )
+        ).tolist()
 
         if len(faces) == 0:
             return None
 
-        x, y, w, h = faces[-1]
+        face_idx = (
+            len(faces) - 1
+            if self.face_idx == -1
+            else min(self.face_idx, len(faces) - 1)
+        )
 
+        x, y, w, h = faces.pop(face_idx)
+        if self.blur:
+            for pos in faces:
+                x1, x2, y1, y2 = pos[0], pos[0] + pos[2], pos[1], pos[1] + pos[3]
+                self.image[y1:y2, x1:x2] = cv2.medianBlur(self.image[y1:y2, x1:x2], 35)
         pos = self._crop_positions(
             img_height,
             img_width,
@@ -143,14 +139,13 @@ class Cropper:
             w,
             h,
         )
-
-        self.image = self.image[pos[0] - 200 : pos[1], pos[2] : pos[3]]
+        self.image = self.image[pos[0] : pos[1], pos[2] : pos[3]]
 
         if self.resize:
             with Image.fromarray(self.image) as img:
                 self.image = np.array(img.resize((self.width, self.height)))
 
-        cv2.imwrite(out.as_posix(), self.__bgr_to_rbg())
+        cv2.imwrite(out.as_posix(), cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB))
         return out
 
     def _determine_safe_zoom(self, imgh, imgw, x, y, w, h):
@@ -198,13 +193,13 @@ class Cropper:
             height_crop = float(width_crop) / self.aspect_ratio
 
         # Calculate padding by centering face
-        xpad = (width_crop - w) / 2
-        ypad = (height_crop - h) / 2
+        xpad = (width_crop - w + self.padding) / 2
+        ypad = (height_crop - h + self.padding) / 2
 
         # Calc. positions of crop
-        h1 = x - xpad
+        h1 = max(0, x - xpad)
         h2 = x + w + xpad
-        v1 = y - ypad
+        v1 = max(0, y - ypad)
         v2 = y + h + ypad
 
         return [int(v1), int(v2), int(h1), int(h2)]
