@@ -46,7 +46,7 @@ class Cropper:
         self.width = to_int(width, self.DEFAULT_WIDTH)
         self.padding = (max(self.width, self.height) // 20) * to_int(padding, self.DEFAULT_PADDING)
         self.face_percent = to_int(face_percent, self.DEFAULT_FACE_PERCENTAGE)
-        self.aspect_ratio = width / height
+        self.aspect_ratio = self.width / self.height
         self.resize = resize
         self.face_idx = to_int(face_idx, -1)
         self.blur = blur
