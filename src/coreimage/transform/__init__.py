@@ -3,10 +3,12 @@ from typing import Optional
 from PIL import Image
 from coreimage.utils import round8
 from .crop import Cropper
+from .upscale import Upscale
 
 __all__ = [
     "normalize",
-    "Cropper"
+    "Cropper",
+    "Upscale"
 ]
 
 

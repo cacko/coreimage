@@ -117,12 +117,20 @@ def cli_cropface(
         width=width,
         height=height,
         padding=padding,
-        face_idx=face_index,
         face_percent=face_percentage,
     )
-    crop_path = crop.crop(output)
-    with get_kitty_image(image_path=crop_path, height=20) as output:
-        print(output)
+    try:
+        faces_path = crop.show_faces()
+        assert faces_path
+        with get_kitty_image(image_path=faces_path, height=20) as t_image:
+            print(t_image)  
+        crop_path = crop.crop(face_idx=face_index, out=output)
+        assert crop_path
+        with get_kitty_image(image_path=crop_path, height=20) as t_image:
+            print(t_image)  
+    except AssertionError:
+        logging.error("No faces found")
+
 
 
 @cli.command("qrcode", short_help="qrcode")

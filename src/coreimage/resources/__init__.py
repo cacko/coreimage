@@ -1,3 +1,4 @@
 from pathlib import Path
 
-HAARCASCADE_XML = Path(__file__).parent / "haarcascade_frontalface_default.xml"
+RESOURCES_ROOT = Path(__file__).parent
+HAARCASCADE_XML = RESOURCES_ROOT / "haarcascade_frontalface_default.xml"
