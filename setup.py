@@ -59,7 +59,7 @@ setup(
     python_requires=">=3.11",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
-    package_data={"coreimage.resources": ["*"]}
+    package_data={"coreimage.resources": ["*"]},
     entry_points="""
         [console_scripts]
         ivan=coreimage.cli:cli

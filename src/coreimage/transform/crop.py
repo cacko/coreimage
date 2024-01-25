@@ -134,20 +134,7 @@ class Cropper:
             return None
 
         x, y, w, h = faces[-1]
-        print(faces)
-        # if self.padding:
-        #     x = x - (self.padding // 2)
-        #     y = y + (self.padding // 2)
-        #     w = w + self.padding 
-        #     h = h + self.padding
-        print(
-            img_height,
-            img_width,
-            x,
-            y,
-            w,
-            h,
-        )
+
         pos = self._crop_positions(
             img_height,
             img_width,
@@ -156,8 +143,6 @@ class Cropper:
             w,
             h,
         )
-
-        print(pos)
 
         self.image = self.image[pos[0] - 200 : pos[1], pos[2] : pos[3]]
 
