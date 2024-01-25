@@ -19,7 +19,7 @@ def print_term_image(
             image_path=image_path,
             **kwds
         ) as term_image:
-            print(term_image)
+            print(term_image, end="\n\n")
     except AssertionError:
         pass
 
