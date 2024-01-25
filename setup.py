@@ -52,7 +52,7 @@ setup(
         "term-image>=0.8.0.dev0",
         "segno>=1.5.2",
         "spandrel>0.2",
-        "torch=>2.1.2",
+        "torch>=2.1.2",
         "torchvision=>0.16.2"
     ],
     setup_requires=["wheel", "semver"],
