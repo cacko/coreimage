@@ -2,9 +2,11 @@ from pathlib import Path
 from typing import Optional
 from PIL import Image
 from coreimage.utils import round8
+from .crop import Cropper
 
 __all__ = [
-    "normalize"
+    "normalize",
+    "Cropper"
 ]
 
 

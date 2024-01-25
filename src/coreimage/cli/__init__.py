@@ -1,3 +1,4 @@
+from email.policy import default
 from pathlib import Path
 import sys
 import click
@@ -11,6 +12,7 @@ from coreimage.cli.interactive.items import ConcatQuery, MenuItem, QueryTask
 from coreimage.version import __version__
 from coreimage.terminal import get_kitty_image
 from coreimage.qrcode import get_qrcode
+from coreimage.transform import Cropper
 
 
 def banner(txt: str, color: str = "bright_green"):
@@ -91,6 +93,27 @@ def cli_icat(
     print(output)
 
 
+@cli.command("facecrop")
+@click.argument("path", type=Path)
+@click.option("-o", "--output", type=Path)
+@click.option("-w", "--width", type=int)
+@click.option("-h", "--height", type=int)
+@click.option("-p", "--padding", type=int)
+@click.pass_context
+def cli_cropface(
+    ctx: click.Context,
+    path: Path,
+    width: Optional[int]  = None,
+    height: Optional[int]  = None,
+    padding: Optional[int] = None,
+    output: Optional[Path]  = None,
+):
+    crop = Cropper(path, width=width, height=height, padding=padding)
+    crop_path = crop.crop(output)
+    with get_kitty_image(image_path=crop_path, height=20) as output:
+        print(output)
+
+
 @cli.command("qrcode", short_help="qrcode")
 @click.argument("data", nargs=-1)
 @click.option("-o", "--output")
@@ -104,11 +127,7 @@ def cli_qrcode(
     border: int,
     output: Optional[str] = None,
 ):
-    code_image = get_qrcode(
-        data,
-        box_area=size,
-        border=border
-    )
+    code_image = get_qrcode(data, box_area=size, border=border)
     try:
         assert output
         out_path = Path(output)
