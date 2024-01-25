@@ -86,10 +86,10 @@ class Cropper:
         """Given a filename, returns a numpy array"""
         with Image.open(self.img_path) as img_orig:
             img_orig = exif_transpose(img_orig)
-            w, h = img_orig.width, img_orig.height
-            if max(img_orig.width, img_orig.height) < 2000:
-                img_orig = Upscale.upscale_img(img_orig, scale=2)
-                img_orig = img_orig.resize((w, h))
+            # w, h = img_orig.width, img_orig.height
+            # if max(img_orig.width, img_orig.height) < 2000:
+            #     img_orig = Upscale.upscale_img(img_orig, scale=2)
+            #     img_orig = img_orig.resize((w, h))
             return np.array(img_orig)
 
     @staticmethod
@@ -159,7 +159,7 @@ class Cropper:
         cv2.imwrite(out.as_posix(), cv2.cvtColor(faces_image, cv2.COLOR_BGR2RGB))
         return out
 
-    def crop(self, face_idx: int = -1, out: Optional[Path] = None) -> Path:
+    def crop(self, face_idx: Optional[int] = None, out: Optional[Path] = None) -> Path:
         if not out:
             out = (
                 self.img_path.parent
@@ -171,7 +171,7 @@ class Cropper:
         if not len(faces):
             return None
 
-        face_idx = len(faces) - 1 if face_idx == -1 else min(face_idx, len(faces) - 1)
+        face_idx = min(to_int(face_idx, len(faces) - 1), len(faces) - 1)
 
         x, y, w, h = faces.pop(face_idx)
         if self.blur:
