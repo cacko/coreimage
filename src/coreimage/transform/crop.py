@@ -4,7 +4,7 @@ from PIL import Image
 from pathlib import Path
 from corefile import TempPath
 from pydantic import BaseModel
-from coreimage.resources import HAARCASCADE_XML
+from coreimage.resources import HAARCASCADE_XML, CASCADE_BACK, CASCADE_FRONT, CASCADE_SIDE
 from PIL.ImageOps import exif_transpose
 import itertools
 from corestring import to_int, nearest_bytes
@@ -44,7 +44,7 @@ class Cropper:
         height=640,
         face_percent=50,
         padding=0,
-        resize=True,
+        resize=False,
         blur=True,
     ):
         self.img_path = path
@@ -62,7 +62,7 @@ class Cropper:
         self.aspect_ratio = self.width / self.height
         self.resize = resize
         self.blur = blur
-        self.casc_path = HAARCASCADE_XML.as_posix()
+        self.casc_path = CASCADE_SIDE.as_posix()
 
     @property
     def image(self):
@@ -129,10 +129,8 @@ class Cropper:
             face_cascade = cv2.CascadeClassifier(self.casc_path)
             faces = face_cascade.detectMultiScale(
                 gray,
-                scaleFactor=1.1,
-                minNeighbors=5,
-                minSize=(minface, minface),
-                flags=cv2.CASCADE_FIND_BIGGEST_OBJECT | cv2.CASCADE_DO_ROUGH_SEARCH,
+                scaleFactor=1.3,
+                minNeighbors=5
             )
 
             try:
@@ -147,8 +145,7 @@ class Cropper:
     def show_faces(self) -> Path:
         faces = self.faces
 
-        if not len(faces):
-            return None
+        assert faces
 
         faces_image = self.image.copy()
 
@@ -179,6 +176,7 @@ class Cropper:
                 x1, x2, y1, y2 = pos[0], pos[0] + pos[2], pos[1], pos[1] + pos[3]
                 self.image[y1:y2, x1:x2] = cv2.medianBlur(self.image[y1:y2, x1:x2], 35)
         pos = self.__crop_positions(x, y, w, h)
+        print(pos)
         self.image = self.image[pos.y1 : pos.y2, pos.x1 : pos.x2]
 
         if self.resize:
@@ -237,13 +235,17 @@ class Cropper:
             height_crop = float(width_crop) / self.aspect_ratio
 
         # Calculate padding by centering face
-        xpad = (width_crop - w + self.padding) / 2
-        ypad = (height_crop - h + self.padding) / 2
+        xpad = (width_crop - w ) // 2 + self.padding
+        ypad = (height_crop - h ) // 2 + self.padding
 
         # Calc. positions of crop
         h1 = max(0, x - xpad)
         h2 = x + w + xpad
         v1 = max(0, y - ypad)
         v2 = y + h + ypad
+        
+        print(x, w, h1, h2)
+        print(y, h, v1, v2)
+        
 
         return CropPosition(y1=int(v1), y2=int(v2), x1=int(h1), x2=int(h2))

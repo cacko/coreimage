@@ -9,7 +9,7 @@ from PIL.ImageOps import exif_transpose
 import math
 from operator import itemgetter
 from hashlib import sha1
-from random import randint
+from random import randint, shuffle as random_shuffle
 
 
 def linear_partition(seq, k, dataList=None):
@@ -80,7 +80,7 @@ class Concat:
             self.__output_path = dst_root / dst_name
         return self.__output_path
 
-    def concat_from_paths(self, paths: list[Path]) -> tuple[Path, str]:
+    def concat_from_paths(self, paths: list[Path], shuffle: bool = False) -> tuple[Path, str]:
         def loader():
             names = []
             for p in find_images(paths):
@@ -92,7 +92,7 @@ class Concat:
             ids = "-".join(sorted(names))
             self.__hash = sha1(ids.encode()).hexdigest()
 
-        return self.concat_from_images([p for p in loader()])
+        return self.concat_from_images([p for p in loader()], shuffle=shuffle)
 
     def makeCollage(
             self,
@@ -152,7 +152,9 @@ class Concat:
             continue
         return outImg
 
-    def concat_from_images(self, images: list[Image.Image]) -> tuple[Path, str]:
+    def concat_from_images(self, images: list[Image.Image], shuffle: bool = False) -> tuple[Path, str]:
+        if shuffle:
+            random_shuffle(images)
         collage = self.makeCollage(images)
         if self.output_path.suffix.lower() in [".jpg", ".jpeg"]:
             collage = exif_transpose(collage.convert("RGB"))
