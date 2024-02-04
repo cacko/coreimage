@@ -48,11 +48,6 @@ class Cropper:
         blur=True,
     ):
         self.img_path = path
-        img_height, img_width = self.image.shape[:2]
-        if not height:
-            height = img_height
-        if not width:
-            width = img_width
         self.height = to_int(height, self.DEFAULT_HEIGHT)
         self.width = to_int(width, self.DEFAULT_WIDTH)
         self.padding = (max(self.width, self.height) // 100) * to_int(
@@ -62,7 +57,7 @@ class Cropper:
         self.aspect_ratio = self.width / self.height
         self.resize = resize
         self.blur = blur
-        self.casc_path = CASCADE_SIDE.as_posix()
+        self.casc_path = HAARCASCADE_XML.as_posix()
 
     @property
     def image(self):
@@ -160,7 +155,7 @@ class Cropper:
         if not out:
             out = (
                 self.img_path.parent
-                / f"{self.img_path.stem}_crop{self.img_path.suffix}"
+                / f"{self.img_path.stem}_crop.png"
             )
 
         faces = self.faces
@@ -176,7 +171,6 @@ class Cropper:
                 x1, x2, y1, y2 = pos[0], pos[0] + pos[2], pos[1], pos[1] + pos[3]
                 self.image[y1:y2, x1:x2] = cv2.medianBlur(self.image[y1:y2, x1:x2], 35)
         pos = self.__crop_positions(x, y, w, h)
-        print(pos)
         self.image = self.image[pos.y1 : pos.y2, pos.x1 : pos.x2]
 
         if self.resize:
@@ -244,8 +238,4 @@ class Cropper:
         v1 = max(0, y - ypad)
         v2 = y + h + ypad
         
-        print(x, w, h1, h2)
-        print(y, h, v1, v2)
-        
-
         return CropPosition(y1=int(v1), y2=int(v2), x1=int(h1), x2=int(h2))
