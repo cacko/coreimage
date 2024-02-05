@@ -1,4 +1,5 @@
 
+import json
 from typing import Optional
 from coreimage.find import find_images
 from coreimage.utils import IMAGE_EXT
@@ -10,6 +11,7 @@ import math
 from operator import itemgetter
 from hashlib import sha1
 from random import randint, shuffle as random_shuffle
+from PIL.ExifTags import Base as TagNames
 
 
 def linear_partition(seq, k, dataList=None):
@@ -102,6 +104,7 @@ class Concat:
             max_width=500
     ):
         aspectratiofactor = max(1.5, 4 / len(imgList))
+        fragments = [];
 
         [img.thumbnail((randint(300, max_width), img.height), Image.Resampling.LANCZOS)
          if img.width > max_width else img for img in imgList
@@ -143,20 +146,27 @@ class Concat:
         xPos, yPos = (0, 0)
 
         for row in imgRows:
+            row_fragments = []
             for img in row:
+                fragment = [xPos, yPos]
                 outImg.paste(img, (xPos, yPos))
                 xPos += img.width + spacing
+                fragment.append(xPos)
+                row_fragments.append(fragment)
                 continue
             yPos += max([img.height for img in row]) + spacing
+            fragments += [[*rf, yPos] for rf in row_fragments]
             xPos = 0
             continue
-        return outImg
+        ex = outImg.getexif()
+        ex[TagNames.ImageDescription] = json.dumps(fragments)
+        return outImg, ex
 
     def concat_from_images(self, images: list[Image.Image], shuffle: bool = False) -> tuple[Path, str]:
         if shuffle:
             random_shuffle(images)
-        collage = self.makeCollage(images)
+        collage, ex = self.makeCollage(images)
         if self.output_path.suffix.lower() in [".jpg", ".jpeg"]:
             collage = exif_transpose(collage.convert("RGB"))
-        collage.save(self.output_path.as_posix())
+        collage.save(self.output_path.as_posix(), exif=ex)
         return (self.output_path, self.__hash)
