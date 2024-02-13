@@ -54,7 +54,8 @@ setup(
         "spandrel>0.2",
         "torch>=2.1.2",
         "torchvision>=0.16.2",
-        "mediapipe>=0.10.9"
+        "mediapipe>=0.10.9",
+        "protobuf<4,>=3.11"
     ],
     setup_requires=["wheel", "semver"],
     python_requires=">=3.11",
