@@ -1,7 +1,6 @@
 from pathlib import Path
 
 RESOURCES_ROOT = Path(__file__).parent
-HAARCASCADE_XML = RESOURCES_ROOT / "haarcascade_frontalface_alt2.xml"
-CASCADE_BACK = RESOURCES_ROOT / "cascade_back.xml"
-CASCADE_FRONT = RESOURCES_ROOT / "cascade_front.xml"
-CASCADE_SIDE = RESOURCES_ROOT / "cascade_side.xml"
+UPSCALE_BSRGANx2: Path = RESOURCES_ROOT / "BSRGANx2.pth"
+UPSCALE_REALESGRAN_x4PLUS = RESOURCES_ROOT / "RealESRGAN_x4plus.pth"
+MEDIAPIPE_BLAZE_SHORT = RESOURCES_ROOT / "blaze_face_short_range.tflite"

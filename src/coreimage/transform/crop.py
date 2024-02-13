@@ -4,23 +4,20 @@ from PIL import Image
 from pathlib import Path
 from corefile import TempPath
 from pydantic import BaseModel
-from coreimage.resources import HAARCASCADE_XML, CASCADE_BACK, CASCADE_FRONT, CASCADE_SIDE
+from coreimage.resources import MEDIAPIPE_BLAZE_SHORT
 from PIL.ImageOps import exif_transpose
 import itertools
-from corestring import to_int, nearest_bytes
+from corestring import to_int
 import cv2
 import numpy as np
 from PIL import Image
-from coreimage.transform.upscale import Upscale
-
-FIXEXP = True  # Flag to fix underexposition
-MINFACE = 16  # Minimum face size ratio; too low and we get false positives
-INCREMENT = 0.06
-FACE_RATIO = 6  # Face / padding ratio
+import mediapipe as mp
+from mediapipe.tasks import python
+from mediapipe.tasks.python import vision
+from mediapipe.tasks.python.vision.face_detector import FaceDetectorResult
 
 PILLOW_FILETYPES = [k for k in Image.registered_extensions().keys()]
 INPUT_FILETYPES = PILLOW_FILETYPES + [s.upper() for s in PILLOW_FILETYPES]
-
 
 class CropPosition(BaseModel):
     y1: int
@@ -34,30 +31,21 @@ class Cropper:
     __faces: Optional[list[list[int]]] = None
     DEFAULT_WIDTH = 640
     DEFAULT_HEIGHT = 640
-    DEFAULT_FACE_PERCENTAGE = 50
-    DEFAULT_PADDING = 0
 
     def __init__(
         self,
         path: Path,
         width=640,
         height=640,
-        face_percent=50,
-        padding=0,
         resize=False,
         blur=True,
     ):
         self.img_path = path
         self.height = to_int(height, self.DEFAULT_HEIGHT)
         self.width = to_int(width, self.DEFAULT_WIDTH)
-        self.padding = (max(self.width, self.height) // 100) * to_int(
-            padding, self.DEFAULT_PADDING
-        )
-        self.face_percent = to_int(face_percent, self.DEFAULT_FACE_PERCENTAGE)
         self.aspect_ratio = self.width / self.height
         self.resize = resize
         self.blur = blur
-        self.casc_path = HAARCASCADE_XML.as_posix()
 
     @property
     def image(self):
@@ -78,13 +66,8 @@ class Cropper:
         return self.image.shape[:2][0]
 
     def __open(self):
-        """Given a filename, returns a numpy array"""
         with Image.open(self.img_path) as img_orig:
             img_orig = exif_transpose(img_orig)
-            # w, h = img_orig.width, img_orig.height
-            # if max(img_orig.width, img_orig.height) < 2000:
-            #     img_orig = Upscale.upscale_img(img_orig, scale=2)
-            #     img_orig = img_orig.resize((w, h))
             return np.array(img_orig)
 
     @staticmethod
@@ -114,23 +97,29 @@ class Cropper:
     @property
     def faces(self):
         if self.__faces is None:
-            try:
-                gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
-            except cv2.error:
-                gray = self.image
-            minface = int(
-                np.sqrt(self.image_height**2 + self.image_width**2) / MINFACE
+            base_options = python.BaseOptions(
+                model_asset_path=MEDIAPIPE_BLAZE_SHORT.as_posix()
             )
-            face_cascade = cv2.CascadeClassifier(self.casc_path)
-            faces = face_cascade.detectMultiScale(
-                gray,
-                scaleFactor=1.3,
-                minNeighbors=5
-            )
+            options = vision.FaceDetectorOptions(base_options=base_options)
+            detector = vision.FaceDetector.create_from_options(options)
+            image = mp.Image(image_format=mp.ImageFormat.SRGB, data=self.image)
+            detection_result: FaceDetectorResult = detector.detect(image)
+
+            faces = []
+          
+            for d in detection_result.detections:
+                box = d.bounding_box
+                faces.append([
+                    box.origin_x,
+                    box.origin_y,
+                    box.width,
+                    box.height
+                ])
+            
 
             try:
                 assert len(faces)
-                self.__faces = sorted(faces.tolist(), key=lambda p: p[0])
+                self.__faces = sorted(faces, key=lambda p: p[0])
             except AssertionError:
                 self.__faces = []
             if len(faces) == 0:
@@ -153,10 +142,7 @@ class Cropper:
 
     def crop(self, face_idx: Optional[int] = None, out: Optional[Path] = None) -> Path:
         if not out:
-            out = (
-                self.img_path.parent
-                / f"{self.img_path.stem}_crop.png"
-            )
+            out = self.img_path.parent / f"{self.img_path.stem}_crop.png"
 
         faces = self.faces
 
@@ -195,7 +181,7 @@ class Cropper:
         )  # image_corners
         image_sides = [(i[n], i[n + 1]) for n in range(4)]
 
-        corner_ratios = [self.face_percent]  # Hopefully we use this one
+        corner_ratios = []  # Hopefully we use this one
         for c in corners:
             corner_vector = np.array([center, c])
             a = self.__class__.distance(*corner_vector)
@@ -215,12 +201,8 @@ class Cropper:
         w,
         h,
     ) -> CropPosition:
-        if self.padding:
-            w += self.padding
-            h += self.padding
         zoom = self.__determine_safe_zoom(x, y, w, h)
 
-        # Adjust output height based on percent
         if self.height >= self.width:
             height_crop = h * 100.0 / zoom
             width_crop = self.aspect_ratio * float(height_crop)
@@ -228,14 +210,12 @@ class Cropper:
             width_crop = w * 100.0 / zoom
             height_crop = float(width_crop) / self.aspect_ratio
 
-        # Calculate padding by centering face
-        xpad = (width_crop - w ) // 2 + self.padding
-        ypad = (height_crop - h ) // 2 + self.padding
+        xpad = (width_crop - w) // 2
+        ypad = (height_crop - h) // 2
 
-        # Calc. positions of crop
         h1 = max(0, x - xpad)
         h2 = x + w + xpad
         v1 = max(0, y - ypad)
         v2 = y + h + ypad
-        
+
         return CropPosition(y1=int(v1), y2=int(v2), x1=int(h1), x2=int(h2))

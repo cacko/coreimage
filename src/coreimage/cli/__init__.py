@@ -98,26 +98,20 @@ def cli_icat(
 @click.option("-o", "--output", type=Path)
 @click.option("-w", "--width", type=int, default=640)
 @click.option("-h", "--height", type=int, default=640)
-@click.option("-p", "--padding", type=int)
-@click.option("-fi", "--face_index", type=int)
-@click.option("-fp", "--face_percentage", type=int)
+@click.option("-i", "--face_index", type=int)
 @click.pass_context
 def cli_cropface(
     ctx: click.Context,
     path: Path,
     width: int,
     height: int,
-    padding: Optional[int] = None,
     output: Optional[Path] = None,
     face_index: Optional[int] = -1,
-    face_percentage: Optional[int] = None,
 ):
     crop = Cropper(
         path,
         width=width,
         height=height,
-        padding=padding,
-        face_percent=face_percentage,
     )
     try:
         faces_path = crop.show_faces()

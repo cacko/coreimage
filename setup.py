@@ -53,7 +53,8 @@ setup(
         "segno>=1.5.2",
         "spandrel>0.2",
         "torch>=2.1.2",
-        "torchvision>=0.16.2"
+        "torchvision>=0.16.2",
+        "mediapipe>=0.10.9"
     ],
     setup_requires=["wheel", "semver"],
     python_requires=">=3.11",

@@ -1,6 +1,6 @@
 from term_image.image import KittyImage
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Generator, Optional
 import cv2
 import numpy as np
 from PIL import Image
@@ -10,7 +10,7 @@ from contextlib import contextmanager
 def get_image(
     image_data: Optional[np.ndarray | Image.Image | Path] = None,
     **kwds
-) -> Optional[Image.Image]:
+) -> Generator[Image.Image, None, None]:
     try:
         match(image_data):
             case Image.Image():
