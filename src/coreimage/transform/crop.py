@@ -19,6 +19,7 @@ from mediapipe.tasks.python.vision.face_detector import FaceDetectorResult
 PILLOW_FILETYPES = [k for k in Image.registered_extensions().keys()]
 INPUT_FILETYPES = PILLOW_FILETYPES + [s.upper() for s in PILLOW_FILETYPES]
 
+
 class CropPosition(BaseModel):
     y1: int
     y2: int
@@ -37,7 +38,7 @@ class Cropper:
         path: Path,
         width=640,
         height=640,
-        resize=False,
+        resize=True,
         blur=True,
     ):
         self.img_path = path
@@ -106,16 +107,17 @@ class Cropper:
             detection_result: FaceDetectorResult = detector.detect(image)
 
             faces = []
-          
+
             for d in detection_result.detections:
                 box = d.bounding_box
-                faces.append([
-                    box.origin_x,
-                    max(0, box.origin_y - (box.height // 2)),
-                    box.width,
-                    box.height + (box.height // 2)
-                ])
-            
+                faces.append(
+                    [
+                        box.origin_x,
+                        box.origin_y,
+                        box.width,
+                        box.height,
+                    ]
+                )
 
             try:
                 assert len(faces)
@@ -210,12 +212,14 @@ class Cropper:
             width_crop = w * 100.0 / zoom
             height_crop = float(width_crop) / self.aspect_ratio
 
-        xpad = (width_crop - w) // 6
-        ypad = (height_crop - h) // 6
+        # Calculate padding by centering face
+        xpad = (width_crop - w) // 2
+        ypad = (height_crop - h) // 2
 
-        h1 = max(0, x - xpad)
+        # Calc. positions of crop
+        h1 = x - xpad
         h2 = x + w + xpad
-        v1 = max(0, y - ypad)
+        v1 = y - ypad
         v2 = y + h + ypad
 
         return CropPosition(y1=int(v1), y2=int(v2), x1=int(h1), x2=int(h2))
