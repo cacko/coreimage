@@ -77,7 +77,7 @@ dependencies:
       - stringcase==1.2.0
       - structlog==24.1.0
       - sympy==1.12
-      - term-image==0.8.0
+      - term-image==0.8.0.1
       - torch==2.3.0.dev20240124
       - torchvision==0.18.0.dev20240124
       - typing-extensions==4.9.0

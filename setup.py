@@ -49,7 +49,7 @@ setup(
         "corelog>0.0.15",
         "corefile>=0.1.5",
         "corestring>=0.3.6",
-        "term-image>=0.8.0.dev0",
+        "term-image>=0.8.0.1",
         "segno>=1.5.2",
         "spandrel>0.2",
         "torch>=2.1.2",
