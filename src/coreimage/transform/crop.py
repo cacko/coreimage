@@ -108,8 +108,6 @@ class Cropper:
             faces = []
           
             for d in detection_result.detections:
-                print(d)
-                print(dir(d))
                 box = d.bounding_box
                 faces.append([
                     box.origin_x,
