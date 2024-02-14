@@ -108,12 +108,14 @@ class Cropper:
             faces = []
           
             for d in detection_result.detections:
+                print(d)
+                print(dir(d))
                 box = d.bounding_box
                 faces.append([
                     box.origin_x,
-                    box.origin_y,
+                    max(0, box.origin_y - (box.height // 2)),
                     box.width,
-                    box.height
+                    box.height + (box.height // 2)
                 ])
             
 
@@ -210,8 +212,8 @@ class Cropper:
             width_crop = w * 100.0 / zoom
             height_crop = float(width_crop) / self.aspect_ratio
 
-        xpad = (width_crop - w) // 2
-        ypad = (height_crop - h) // 2
+        xpad = (width_crop - w) // 6
+        ypad = (height_crop - h) // 6
 
         h1 = max(0, x - xpad)
         h2 = x + w + xpad
