@@ -12,7 +12,7 @@ import cv2
 import numpy as np
 from PIL import Image
 from facenet_pytorch import MTCNN
-from math import ceil
+from math import round
 
 PILLOW_FILETYPES = [k for k in Image.registered_extensions().keys()]
 INPUT_FILETYPES = PILLOW_FILETYPES + [s.upper() for s in PILLOW_FILETYPES]
@@ -100,10 +100,7 @@ class Cropper:
             mtcnn = MTCNN()
             boxes, _ = mtcnn.detect(self.image)
             assert len(boxes)
-            print(boxes)
-            # faces = [list(map(ceil, [a, b, c - a, d - b])) for a, b, c, d in boxes]
-            faces = [[130,100,450,605]]
-            print(faces)
+            faces = [list(map(round, [a, b, c - a, d - b])) for a, b, c, d in boxes]
             self.__faces = sorted(faces, key=lambda p: p[0])
         return self.__faces
 
