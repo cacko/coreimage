@@ -11,10 +11,7 @@ from corestring import to_int
 import cv2
 import numpy as np
 from PIL import Image
-import mediapipe as mp
-from mediapipe.tasks import python
-from mediapipe.tasks.python import vision
-from mediapipe.tasks.python.vision.face_detector import FaceDetectorResult
+from facenet_pytorch import MTCNN
 
 PILLOW_FILETYPES = [k for k in Image.registered_extensions().keys()]
 INPUT_FILETYPES = PILLOW_FILETYPES + [s.upper() for s in PILLOW_FILETYPES]
@@ -28,7 +25,7 @@ class CropPosition(BaseModel):
 
 
 class Cropper:
-    __image: Optional[np.ndarray] = None
+    __image: Optional[Image.Image] = None
     __faces: Optional[list[list[int]]] = None
     DEFAULT_WIDTH = 640
     DEFAULT_HEIGHT = 640
@@ -98,34 +95,11 @@ class Cropper:
     @property
     def faces(self):
         if self.__faces is None:
-            base_options = python.BaseOptions(
-                model_asset_path=MEDIAPIPE_BLAZE_SHORT.as_posix()
-            )
-            options = vision.FaceDetectorOptions(base_options=base_options)
-            detector = vision.FaceDetector.create_from_options(options)
-            image = mp.Image(image_format=mp.ImageFormat.SRGB, data=self.image)
-            detection_result: FaceDetectorResult = detector.detect(image)
-
-            faces = []
-
-            for d in detection_result.detections:
-                box = d.bounding_box
-                faces.append(
-                    [
-                        box.origin_x,
-                        box.origin_y,
-                        box.width,
-                        box.height,
-                    ]
-                )
-
-            try:
-                assert len(faces)
-                self.__faces = sorted(faces, key=lambda p: p[0])
-            except AssertionError:
-                self.__faces = []
-            if len(faces) == 0:
-                return None
+            mtcnn = MTCNN()
+            boxes, _ = mtcnn.detect(self.image)
+            assert len(boxes)
+            faces = [list(map(int, [a, b, c - a, d - b])) for a, b, c, d in boxes]
+            self.__faces = sorted(faces, key=lambda p: p[0])
         return self.__faces
 
     def show_faces(self) -> Path:
@@ -213,8 +187,8 @@ class Cropper:
             height_crop = float(width_crop) / self.aspect_ratio
 
         # Calculate padding by centering face
-        xpad = (width_crop - w) // 2
-        ypad = (height_crop - h) // 2
+        xpad = (width_crop - w) / 2
+        ypad = (height_crop - h) / 2
 
         # Calc. positions of crop
         h1 = x - xpad
