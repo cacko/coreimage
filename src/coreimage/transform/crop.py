@@ -12,7 +12,6 @@ import cv2
 import numpy as np
 from PIL import Image
 from facenet_pytorch import MTCNN
-from math import round
 
 PILLOW_FILETYPES = [k for k in Image.registered_extensions().keys()]
 INPUT_FILETYPES = PILLOW_FILETYPES + [s.upper() for s in PILLOW_FILETYPES]
