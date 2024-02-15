@@ -12,6 +12,7 @@ import cv2
 import numpy as np
 from PIL import Image
 from facenet_pytorch import MTCNN
+from math import ceil
 
 PILLOW_FILETYPES = [k for k in Image.registered_extensions().keys()]
 INPUT_FILETYPES = PILLOW_FILETYPES + [s.upper() for s in PILLOW_FILETYPES]
@@ -66,6 +67,7 @@ class Cropper:
     def __open(self):
         with Image.open(self.img_path) as img_orig:
             img_orig = exif_transpose(img_orig)
+            img_orig.thumbnail((1200,1200))
             return np.array(img_orig)
 
     @staticmethod
@@ -98,7 +100,10 @@ class Cropper:
             mtcnn = MTCNN()
             boxes, _ = mtcnn.detect(self.image)
             assert len(boxes)
-            faces = [list(map(int, [a, b, c - a, d - b])) for a, b, c, d in boxes]
+            print(boxes)
+            # faces = [list(map(ceil, [a, b, c - a, d - b])) for a, b, c, d in boxes]
+            faces = [[130,100,450,605]]
+            print(faces)
             self.__faces = sorted(faces, key=lambda p: p[0])
         return self.__faces
 
@@ -118,7 +123,7 @@ class Cropper:
 
     def crop(self, face_idx: Optional[int] = None, out: Optional[Path] = None) -> Path:
         if not out:
-            out = self.img_path.parent / f"{self.img_path.stem}_crop.png"
+            out = self.img_path.parent / f"{self.img_path.stem}_crop.jpg"
 
         faces = self.faces
 
@@ -157,7 +162,7 @@ class Cropper:
         )  # image_corners
         image_sides = [(i[n], i[n + 1]) for n in range(4)]
 
-        corner_ratios = []  # Hopefully we use this one
+        corner_ratios = [50]  # Hopefully we use this one
         for c in corners:
             corner_vector = np.array([center, c])
             a = self.__class__.distance(*corner_vector)
@@ -187,13 +192,15 @@ class Cropper:
             height_crop = float(width_crop) / self.aspect_ratio
 
         # Calculate padding by centering face
-        xpad = (width_crop - w) / 2
-        ypad = (height_crop - h) / 2
+        xpad = (width_crop - w) // 2
+        ypad = (height_crop - h) // 2
 
         # Calc. positions of crop
-        h1 = x - xpad
-        h2 = x + w + xpad
-        v1 = y - ypad
-        v2 = y + h + ypad
+        h1 = max(0, x - xpad)
+        h2 = x + w + xpad - min(0, h1)
+        v1 = max(0, y - ypad)
+        v2 = y + h + ypad - min(0, v1)
+        
+        print(v1, v2, h1, h2, self.image_height, self.image_width)
 
         return CropPosition(y1=int(v1), y2=int(v2), x1=int(h1), x2=int(h2))
