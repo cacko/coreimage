@@ -201,6 +201,4 @@ class Cropper:
         v1 = max(0, y - ypad)
         v2 = y + h + ypad - min(0, v1)
         
-        print(v1, v2, h1, h2, self.image_height, self.image_width)
-
         return CropPosition(y1=int(v1), y2=int(v2), x1=int(h1), x2=int(h2))
