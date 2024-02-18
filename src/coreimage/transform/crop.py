@@ -4,7 +4,6 @@ from PIL import Image
 from pathlib import Path
 from corefile import TempPath
 from pydantic import BaseModel
-from coreimage.resources import MEDIAPIPE_BLAZE_SHORT
 from PIL.ImageOps import exif_transpose
 import itertools
 from corestring import to_int
@@ -65,6 +64,7 @@ class Cropper:
 
     def __open(self):
         with Image.open(self.img_path) as img_orig:
+            img_orig = img_orig.convert("RGB")
             img_orig = exif_transpose(img_orig)
             img_orig.thumbnail((1200,1200))
             return np.array(img_orig)
