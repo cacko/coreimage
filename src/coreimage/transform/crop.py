@@ -36,6 +36,7 @@ class Cropper:
         height=640,
         resize=True,
         blur=True,
+        margin=200
     ):
         self.img_path = path
         self.height = to_int(height, self.DEFAULT_HEIGHT)
@@ -43,6 +44,7 @@ class Cropper:
         self.aspect_ratio = self.width / self.height
         self.resize = resize
         self.blur = blur
+        self.margin = margin
 
     @property
     def image(self):
@@ -66,7 +68,7 @@ class Cropper:
         with Image.open(self.img_path) as img_orig:
             img_orig = img_orig.convert("RGB")
             img_orig = exif_transpose(img_orig)
-            img_orig.thumbnail((1200,1200))
+            img_orig.thumbnail((1200, 1200))
             return np.array(img_orig)
 
     @staticmethod
@@ -92,14 +94,29 @@ class Cropper:
         denom = np.dot(dap, db).astype(float)
         num = np.dot(dap, dp)
         return (num / denom) * db + b1
+    
+
 
     @property
     def faces(self):
         if self.__faces is None:
-            mtcnn = MTCNN()
+            mtcnn = MTCNN(image_size=640, margin=100)
             boxes, _ = mtcnn.detect(self.image)
             assert len(boxes)
-            faces = [list(map(round, [a, b, c - a, d - b])) for a, b, c, d in boxes]
+            
+            def face_box(box):
+                margin = [
+                    self.margin * (box[2] - box[0]) / (self.width - self.margin),
+                    self.margin * (box[3] - box[1]) / (self.height - self.margin),
+                ]
+                box = [
+                    int(max(box[0] - margin[0] / 2, 0)),
+                    int(max(box[1] - margin[1] / 2, 0)),
+                    int(min(box[2] + margin[0] / 2, self.image_width)),
+                    int(min(box[3] + margin[1] / 2, self.image_height)),
+                ]
+                return [box[0], box[1], box[2] - box[0], box[3] - box[1]]
+            faces = [face_box(box) for box in boxes]
             self.__faces = sorted(faces, key=lambda p: p[0])
         return self.__faces
 
