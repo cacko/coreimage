@@ -100,24 +100,28 @@ class Cropper:
     @property
     def faces(self):
         if self.__faces is None:
-            mtcnn = MTCNN(image_size=640, margin=100)
-            boxes, _ = mtcnn.detect(self.image)
-            assert len(boxes)
-            
-            def face_box(box):
-                margin = [
-                    self.margin * (box[2] - box[0]) / (self.width - self.margin),
-                    self.margin * (box[3] - box[1]) / (self.height - self.margin),
-                ]
-                box = [
-                    int(max(box[0] - margin[0] / 2, 0)),
-                    int(max(box[1] - margin[1] / 2, 0)),
-                    int(min(box[2] + margin[0] / 2, self.image_width)),
-                    int(min(box[3] + margin[1] / 2, self.image_height)),
-                ]
-                return [box[0], box[1], box[2] - box[0], box[3] - box[1]]
-            faces = [face_box(box) for box in boxes]
-            self.__faces = sorted(faces, key=lambda p: p[0])
+            try:
+                mtcnn = MTCNN(image_size=640, margin=100)
+                boxes, _ = mtcnn.detect(self.image)
+                assert boxes
+                assert len(boxes)
+                
+                def face_box(box):
+                    margin = [
+                        self.margin * (box[2] - box[0]) / (self.width - self.margin),
+                        self.margin * (box[3] - box[1]) / (self.height - self.margin),
+                    ]
+                    box = [
+                        int(max(box[0] - margin[0] / 2, 0)),
+                        int(max(box[1] - margin[1] / 2, 0)),
+                        int(min(box[2] + margin[0] / 2, self.image_width)),
+                        int(min(box[3] + margin[1] / 2, self.image_height)),
+                    ]
+                    return [box[0], box[1], box[2] - box[0], box[3] - box[1]]
+                faces = [face_box(box) for box in boxes]
+                self.__faces = sorted(faces, key=lambda p: p[0])
+            except AssertionError:
+                raise ValueError("No faces found")
         return self.__faces
 
     def show_faces(self) -> Path:
