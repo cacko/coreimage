@@ -14,6 +14,7 @@ from random import randint, shuffle as random_shuffle
 from PIL.ExifTags import Base as TagNames
 
 
+
 def linear_partition(seq, k, dataList=None):
     if k <= 0:
         return []

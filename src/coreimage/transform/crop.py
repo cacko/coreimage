@@ -10,6 +10,8 @@ from corestring import to_int
 import cv2
 import numpy as np
 from PIL import Image
+from PIL.ImageOps import fit, cover, contain, pad
+from transformers.image_transforms import center_crop
 from facenet_pytorch import MTCNN
 
 PILLOW_FILETYPES = [k for k in Image.registered_extensions().keys()]
@@ -36,7 +38,7 @@ class Cropper:
         height=640,
         resize=True,
         blur=True,
-        margin=200
+        margin=300
     ):
         self.img_path = path
         self.height = to_int(height, self.DEFAULT_HEIGHT)
@@ -110,14 +112,17 @@ class Cropper:
                         self.margin * (box[2] - box[0]) / (self.width - self.margin),
                         self.margin * (box[3] - box[1]) / (self.height - self.margin),
                     ]
+                    if any([box[2] - box[0] < 20, box[3] - box[1] < 20]):
+                        return None
                     box = [
                         int(max(box[0] - margin[0] / 2, 0)),
                         int(max(box[1] - margin[1] / 2, 0)),
                         int(min(box[2] + margin[0] / 2, self.image_width)),
                         int(min(box[3] + margin[1] / 2, self.image_height)),
                     ]
+                    print(box)
                     return [box[0], box[1], box[2] - box[0], box[3] - box[1]]
-                faces = [face_box(box) for box in boxes]
+                faces = list(filter(None, [face_box(box) for box in boxes]))
                 self.__faces = sorted(faces, key=lambda p: p[0])
             except AssertionError:
                 raise ValueError("No faces found")
@@ -137,7 +142,7 @@ class Cropper:
         cv2.imwrite(out.as_posix(), cv2.cvtColor(faces_image, cv2.COLOR_BGR2RGB))
         return out
 
-    def crop(self, face_idx: Optional[int] = None, out: Optional[Path] = None) -> Path:
+    def crop(self, face_idx: Optional[int] = 0, out: Optional[Path] = None) -> Path:
         if not out:
             out = self.img_path.parent / f"{self.img_path.stem}_crop.jpg"
 
@@ -146,75 +151,20 @@ class Cropper:
         if not len(faces):
             return None
 
-        face_idx = min(to_int(face_idx, len(faces) - 1), len(faces) - 1)
+        if not face_idx:
+            face_idx = 0
+        # face_idx = min(to_int(face_idx, len(faces) - 1), len(faces) - 1)
 
         x, y, w, h = faces.pop(face_idx)
         if self.blur:
             for pos in faces:
                 x1, x2, y1, y2 = pos[0], pos[0] + pos[2], pos[1], pos[1] + pos[3]
                 self.image[y1:y2, x1:x2] = cv2.medianBlur(self.image[y1:y2, x1:x2], 35)
-        pos = self.__crop_positions(x, y, w, h)
-        self.image = self.image[pos.y1 : pos.y2, pos.x1 : pos.x2]
+        self.image = self.image[y : (y+h), x : (x+w)]
 
         if self.resize:
             with Image.fromarray(self.image) as img:
-                self.image = np.array(img.resize((self.width, self.height)))
-
+                self.image = np.array(pad(img, (self.width, self.height)))
         cv2.imwrite(out.as_posix(), cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB))
         return out
 
-    def __determine_safe_zoom(self, x, y, w, h):
-        # Find out what zoom factor to use given self.aspect_ratio
-        corners = itertools.product((x, x + w), (y, y + h))
-        center = np.array([x + int(w / 2), y + int(h / 2)])
-        i = np.array(
-            [
-                (0, 0),
-                (0, self.image_height),
-                (self.image_width, self.image_height),
-                (self.image_width, 0),
-                (0, 0),
-            ]
-        )  # image_corners
-        image_sides = [(i[n], i[n + 1]) for n in range(4)]
-
-        corner_ratios = [50]  # Hopefully we use this one
-        for c in corners:
-            corner_vector = np.array([center, c])
-            a = self.__class__.distance(*corner_vector)
-            intersects = list(
-                self.__class__.intersect(corner_vector, side) for side in image_sides
-            )
-            for pt in intersects:
-                if (pt >= 0).all() and (pt <= i[2]).all():  # if intersect within image
-                    dist_to_pt = self.__class__.distance(center, pt)
-                    corner_ratios.append(100 * a / dist_to_pt)
-        return max(corner_ratios)
-
-    def __crop_positions(
-        self,
-        x,
-        y,
-        w,
-        h,
-    ) -> CropPosition:
-        zoom = self.__determine_safe_zoom(x, y, w, h)
-
-        if self.height >= self.width:
-            height_crop = h * 100.0 / zoom
-            width_crop = self.aspect_ratio * float(height_crop)
-        else:
-            width_crop = w * 100.0 / zoom
-            height_crop = float(width_crop) / self.aspect_ratio
-
-        # Calculate padding by centering face
-        xpad = (width_crop - w) // 2
-        ypad = (height_crop - h) // 2
-
-        # Calc. positions of crop
-        h1 = max(0, x - xpad)
-        h2 = x + w + xpad - min(0, h1)
-        v1 = max(0, y - ypad)
-        v2 = y + h + ypad - min(0, v1)
-        
-        return CropPosition(y1=int(v1), y2=int(v2), x1=int(h1), x2=int(h2))
