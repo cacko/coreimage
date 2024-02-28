@@ -164,7 +164,7 @@ class Cropper:
 
         if self.resize:
             with Image.fromarray(self.image) as img:
-                self.image = np.array(pad(img, (self.width, self.height)))
+                self.image = np.array(pad(img, (self.width, self.height), color=(255,255,255)))
         cv2.imwrite(out.as_posix(), cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB))
         return out
 
