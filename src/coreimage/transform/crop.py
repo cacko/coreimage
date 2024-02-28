@@ -1,3 +1,4 @@
+import logging
 from typing import Optional
 from uuid import uuid4
 from PIL import Image
@@ -5,13 +6,11 @@ from pathlib import Path
 from corefile import TempPath
 from pydantic import BaseModel
 from PIL.ImageOps import exif_transpose
-import itertools
 from corestring import to_int
 import cv2
 import numpy as np
 from PIL import Image
-from PIL.ImageOps import fit, cover, contain, pad
-from transformers.image_transforms import center_crop
+from PIL.ImageOps import pad
 from facenet_pytorch import MTCNN
 
 PILLOW_FILETYPES = [k for k in Image.registered_extensions().keys()]
@@ -120,7 +119,7 @@ class Cropper:
                         int(min(box[2] + margin[0] / 2, self.image_width)),
                         int(min(box[3] + margin[1] / 2, self.image_height)),
                     ]
-                    print(box)
+                    logging.debug(box)
                     return [box[0], box[1], box[2] - box[0], box[3] - box[1]]
                 faces = list(filter(None, [face_box(box) for box in boxes]))
                 self.__faces = sorted(faces, key=lambda p: p[0])
