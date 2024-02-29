@@ -12,6 +12,7 @@ import numpy as np
 from PIL import Image
 from PIL.ImageOps import pad
 from facenet_pytorch import MTCNN
+from functools import reduce
 
 PILLOW_FILETYPES = [k for k in Image.registered_extensions().keys()]
 INPUT_FILETYPES = PILLOW_FILETYPES + [s.upper() for s in PILLOW_FILETYPES]
@@ -31,13 +32,7 @@ class Cropper:
     DEFAULT_HEIGHT = 640
 
     def __init__(
-        self,
-        path: Path,
-        width=640,
-        height=640,
-        resize=True,
-        blur=True,
-        margin=300
+        self, path: Path, width=640, height=640, resize=True, blur=True, margin=300
     ):
         self.img_path = path
         self.height = to_int(height, self.DEFAULT_HEIGHT)
@@ -95,8 +90,6 @@ class Cropper:
         denom = np.dot(dap, db).astype(float)
         num = np.dot(dap, dp)
         return (num / denom) * db + b1
-    
-
 
     @property
     def faces(self):
@@ -105,7 +98,7 @@ class Cropper:
                 mtcnn = MTCNN(image_size=640, margin=100)
                 boxes, _ = mtcnn.detect(self.image)
                 assert len(boxes)
-                
+
                 def face_box(box):
                     margin = [
                         self.margin * (box[2] - box[0]) / (self.width - self.margin),
@@ -121,6 +114,7 @@ class Cropper:
                     ]
                     logging.debug(box)
                     return [box[0], box[1], box[2] - box[0], box[3] - box[1]]
+
                 faces = list(filter(None, [face_box(box) for box in boxes]))
                 self.__faces = sorted(faces, key=lambda p: p[0])
             except AssertionError:
@@ -151,19 +145,25 @@ class Cropper:
             return None
 
         if not face_idx:
-            face_idx = 0
-        # face_idx = min(to_int(face_idx, len(faces) - 1), len(faces) - 1)
+            idx_by_size = list(
+                map(
+                    lambda fs: fs[0],
+                    sorted(enumerate(faces), key=lambda ff: ff[1][2] * ff[1][3]),
+                )
+            )
+            face_idx = idx_by_size[-1]
 
         x, y, w, h = faces.pop(face_idx)
         if self.blur:
             for pos in faces:
                 x1, x2, y1, y2 = pos[0], pos[0] + pos[2], pos[1], pos[1] + pos[3]
                 self.image[y1:y2, x1:x2] = cv2.medianBlur(self.image[y1:y2, x1:x2], 35)
-        self.image = self.image[y : (y+h), x : (x+w)]
+        self.image = self.image[y : (y + h), x : (x + w)]
 
         if self.resize:
             with Image.fromarray(self.image) as img:
-                self.image = np.array(pad(img, (self.width, self.height), color=(255,255,255)))
+                self.image = np.array(
+                    pad(img, (self.width, self.height), color=(255, 255, 255))
+                )
         cv2.imwrite(out.as_posix(), cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB))
         return out
-
