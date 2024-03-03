@@ -32,7 +32,7 @@ class Cropper:
     DEFAULT_HEIGHT = 640
 
     def __init__(
-        self, path: Path, width=640, height=640, resize=True, blur=True, margin=300
+        self, path: Path, width=640, height=640, resize=True, blur=True, margin=200
     ):
         self.img_path = path
         self.height = to_int(height, self.DEFAULT_HEIGHT)
@@ -95,7 +95,7 @@ class Cropper:
     def faces(self):
         if self.__faces is None:
             try:
-                mtcnn = MTCNN(image_size=640, margin=100)
+                mtcnn = MTCNN(image_size=640)
                 boxes, _ = mtcnn.detect(self.image)
                 assert len(boxes)
 
@@ -158,7 +158,11 @@ class Cropper:
             for pos in faces:
                 x1, x2, y1, y2 = pos[0], pos[0] + pos[2], pos[1], pos[1] + pos[3]
                 self.image[y1:y2, x1:x2] = cv2.medianBlur(self.image[y1:y2, x1:x2], 35)
-        self.image = self.image[y : (y + h), x : (x + w)]
+        diff = h - w
+        self.image = self.image[
+            y : (y + h),
+            max((x - diff // 2), 0) : min((x + w + diff // 2), self.image_width),
+        ]
 
         if self.resize:
             with Image.fromarray(self.image) as img:
