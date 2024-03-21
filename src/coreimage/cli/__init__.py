@@ -10,9 +10,11 @@ from coreimage.cli.interactive.models import TaskIcon
 from coreimage.organise import Concat
 from coreimage.cli.interactive.items import ConcatQuery, MenuItem, QueryTask
 from coreimage.version import __version__
-from coreimage.terminal import get_kitty_image
+from coreimage.terminal import get_kitty_image, print_term_image
 from coreimage.qrcode import get_qrcode
 from coreimage.transform import Cropper
+from coreimage.find import find_images
+from coreimage.transform import Upscale
 
 
 def banner(txt: str, color: str = "bright_green"):
@@ -148,9 +150,26 @@ def cli_qrcode(
         code_image.save(out_path.as_posix())
     except AssertionError:
         pass
-    output = get_kitty_image(image=code_image, height=20)
-    print(output)
+    print_term_image(image=code_image, height=20)
 
+    
+@cli.command("upscale")
+@click.argument("paths", nargs=-1,  type=list[Path])
+@click.option("-o", "--output")
+@click.option("-s", "--scale", default=2)
+def cli_upscale(
+    paths: list[Path],
+    scale: int,
+    output: Optional[Path] = None,
+):
+    for img_path in find_images(paths):
+        try:
+            upscaled_path = Upscale.upscale(src=img_path, dst=output, scale=scale)
+            assert upscaled_path
+            logging.info(f"Upscaled result")
+            print_term_image(image_path=upscaled_path, height=30)
+        except Exception as e:
+            logging.exception(e)
 
 def run():
     try:
