@@ -52,7 +52,10 @@ setup(
         "term-image>=0.8.0.1",
         "segno>=1.5.2",
         "spandrel>0.2",
-        "facenet-pytorch>=2.5.3"
+        "facenet-pytorch>=2.5.3",
+        "transformers>=4.39.2",
+        "torch>=2.3",
+        "torchvision>=0.18"
     ],
     setup_requires=["wheel", "semver"],
     python_requires=">=3.11",
