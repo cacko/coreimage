@@ -95,6 +95,25 @@ def cli_icat(
     print(output)
 
 
+@cli.command("faces")
+@click.argument("path", type=Path)
+@click.pass_context
+def cli_faces(
+    ctx: click.Context,
+    path: Path,
+):
+    crop = Cropper(
+        path,
+    )
+    try:
+        faces_path = crop.show_faces()
+        assert faces_path
+        with get_kitty_image(image_path=faces_path, height=40) as t_image:
+            print(t_image)
+    except AssertionError:
+        logging.error("No faces found")
+
+
 @cli.command("facecrop")
 @click.argument("path", type=Path)
 @click.option("-o", "--output", type=Path)
@@ -119,14 +138,13 @@ def cli_cropface(
         faces_path = crop.show_faces()
         assert faces_path
         with get_kitty_image(image_path=faces_path, height=20) as t_image:
-            print(t_image)  
+            print(t_image)
         crop_path = crop.crop(face_idx=face_index, out=output)
         assert crop_path
         with get_kitty_image(image_path=crop_path, height=20) as t_image:
-            print(t_image)  
+            print(t_image)
     except AssertionError:
         logging.error("No faces found")
-
 
 
 @cli.command("qrcode", short_help="qrcode")
@@ -152,9 +170,9 @@ def cli_qrcode(
         pass
     print_term_image(image=code_image, height=20)
 
-    
+
 @cli.command("upscale")
-@click.argument("paths", nargs=-1,  type=list[Path])
+@click.argument("paths", nargs=-1, type=list[Path])
 @click.option("-o", "--output")
 @click.option("-s", "--scale", default=2)
 def cli_upscale(
@@ -162,6 +180,7 @@ def cli_upscale(
     scale: int,
     output: Optional[Path] = None,
 ):
+    print(paths)
     for img_path in find_images(paths):
         try:
             upscaled_path = Upscale.upscale(src=img_path, dst=output, scale=scale)
@@ -170,6 +189,7 @@ def cli_upscale(
             print_term_image(image_path=upscaled_path, height=30)
         except Exception as e:
             logging.exception(e)
+
 
 def run():
     try:

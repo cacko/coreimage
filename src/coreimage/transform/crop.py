@@ -127,9 +127,18 @@ class Cropper:
         assert faces
 
         faces_image = self.image.copy()
-
-        for x, y, w, h in faces:
-            cv2.rectangle(faces_image, (x, y), (x + w, y + h), (0, 255, 0), 4)
+        for idx, (x, y, w, h) in enumerate(faces):
+            cv2.rectangle(faces_image, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            cv2.putText(
+                img=faces_image,
+                text=f"{idx}",
+                org=(x + 5, y + h - 5),
+                fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+                fontScale=1,
+                color=(0, 0, 255),
+                thickness=2,
+                lineType=cv2.LINE_AA
+            )
 
         out = TempPath(f"{uuid4()}.png")
         cv2.imwrite(out.as_posix(), cv2.cvtColor(faces_image, cv2.COLOR_BGR2RGB))
