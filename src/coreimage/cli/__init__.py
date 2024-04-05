@@ -172,18 +172,18 @@ def cli_qrcode(
 
 
 @cli.command("upscale")
-@click.argument("paths", nargs=-1, type=list[Path])
+@click.argument("path", type=Path)
 @click.option("-o", "--output")
-@click.option("-s", "--scale", default=2)
+@click.option("-s", "--scale", type=int)
 def cli_upscale(
-    paths: list[Path],
-    scale: int,
+    path: Path,
+    scale: int = 2,
     output: Optional[Path] = None,
 ):
-    print(paths)
-    for img_path in find_images(paths):
+
+    for img_path in find_images([path]):
         try:
-            upscaled_path = Upscale.upscale(src=img_path, dst=output, scale=scale)
+            upscaled_path = Upscale.upscale(src_path=img_path, dst_path=output, scale=scale)
             assert upscaled_path
             logging.info(f"Upscaled result")
             print_term_image(image_path=upscaled_path, height=30)
