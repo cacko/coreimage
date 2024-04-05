@@ -185,7 +185,7 @@ def cli_upscale(
         try:
             upscaled_path = Upscale.upscale(src_path=img_path, dst_path=output, scale=scale)
             assert upscaled_path
-            logging.info(f"Upscaled result")
+            logging.info(f"Upscaled result / {upscaled_path}")
             print_term_image(image_path=upscaled_path, height=30)
         except Exception as e:
             logging.exception(e)
