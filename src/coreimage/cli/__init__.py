@@ -1,4 +1,4 @@
-from email.policy import default
+import os
 from pathlib import Path
 import sys
 import click
@@ -173,14 +173,13 @@ def cli_qrcode(
 
 @cli.command("upscale")
 @click.argument("path", type=Path)
-@click.option("-o", "--output")
+@click.option("-o", "--output", type=Path)
 @click.option("-s", "--scale", type=int)
 def cli_upscale(
     path: Path,
     scale: int = 2,
     output: Optional[Path] = None,
 ):
-
     for img_path in find_images([path]):
         try:
             upscaled_path = Upscale.upscale(src_path=img_path, dst_path=output, scale=scale)
