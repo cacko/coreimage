@@ -47,7 +47,7 @@ setup(
         "emoji>=2.4.0",
         "pydantic>=1.10",
         "corelog>0.0.15",
-        "corefile>=0.1.5",
+        "corefile>=0.1.6",
         "corestring>=0.3.6",
         "term-image>=0.8.0.1",
         "segno>=1.5.2",
