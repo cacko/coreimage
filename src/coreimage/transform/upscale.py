@@ -41,9 +41,9 @@ class UpscaleMeta(type):
         cls, src_path: Path, dst_path: Optional[Path] = None, **kwds
     ) -> Optional[Path]:
         if not dst_path:
-            dst_path = TempPath(f"{src_path.stem}.png")
+            dst_path = Path(os.getcwd()) / f"{src_path.stem}_upscaled.png"
         if dst_path.is_dir():
-            dst_path = dst_path / f"{src_path.stem}.png"
+            dst_path = dst_path / f"{src_path.stem}_upscaled.png"
         res = cls().do_upscale(src=src_path, dst=dst_path, **kwds)
         return dst_path if res else None
 
