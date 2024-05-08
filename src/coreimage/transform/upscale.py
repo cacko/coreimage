@@ -9,18 +9,21 @@ from corefile import TempPath
 from spandrel import ImageModelDescriptor, ModelLoader
 import torch
 from torchvision.transforms.functional import to_pil_image, to_tensor
-from coreimage.resources import RESOURCES_ROOT
+from coreimage.resources import (
+    UPSCALE_ESRGAN_4x,
+    UPSCALE_REALESRGAN_x2,
+    
 
+)
 
 class UpscaleMeta(type):
     __models = {
-        2: "BSRGANx2.pth",
-        4: "RealESRGAN_x4plus.pth",
-        8: "RealESRGAN_x8.pth",
+        2: UPSCALE_REALESRGAN_x2,
+        4: UPSCALE_ESRGAN_4x,
     }
 
     def get_upscaler(cls, scale: int) -> ImageModelDescriptor:
-        model_path = RESOURCES_ROOT / cls.__models[scale]
+        model_path = cls.__models[scale]
         logging.debug(model_path)
         model = ModelLoader().load_from_file(model_path.as_posix())
         model.to(cls.device)
