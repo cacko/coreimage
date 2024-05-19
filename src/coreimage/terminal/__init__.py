@@ -1,4 +1,4 @@
-from term_image.utils import
+from term_image.image.common import GraphicsImage
 from pathlib import Path
 from typing import  Optional
 import numpy as np
