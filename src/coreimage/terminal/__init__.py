@@ -1,7 +1,6 @@
-from coreimage.terminal.kitty import get_term_image as get_kitty_image
-from term_image.image import KittyImage
+from term_image.image import GraphicsImage
 from pathlib import Path
-from typing import Any, Optional
+from typing import  Optional
 import numpy as np
 from PIL import Image
 
@@ -12,6 +11,9 @@ def print_term_image(
     **kwds
 ):
     try:
+        assert GraphicsImage.is_supported()
+        from coreimage.terminal.kitty import get_term_image as get_kitty_image
+        from term_image.image import KittyImage
         assert KittyImage.is_supported()
         kwds.setdefault("height", height)
         with get_kitty_image(
@@ -24,6 +26,5 @@ def print_term_image(
         pass
 
 __all__ = [
-    "get_kitty_image",
     "print_term_image"
 ]
