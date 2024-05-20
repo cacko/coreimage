@@ -12,7 +12,8 @@ import numpy as np
 from PIL import Image
 from PIL.ImageOps import pad
 from facenet_pytorch import MTCNN
-from functools import reduce
+from coreimage.transform.upscale import Upscale
+from corestring import round2
 
 PILLOW_FILETYPES = [k for k in Image.registered_extensions().keys()]
 INPUT_FILETYPES = PILLOW_FILETYPES + [s.upper() for s in PILLOW_FILETYPES]
@@ -59,11 +60,24 @@ class Cropper:
     @property
     def image_height(self) -> int:
         return self.image.shape[:2][0]
+    
+    def __upscale(self, image: Image.Image) -> Image:
+        try:
+            w, h  = image.width, image.height
+            min_dim = min(w, h)
+            assert 1200 > min_dim
+            scale =  min(round2(1200/min_dim), 4)     
+            return Upscale.upscale_img(img=image, scale=scale) 
+        except AssertionError:
+            pass
+        
+        return image
 
     def __open(self):
         with Image.open(self.img_path) as img_orig:
             img_orig = img_orig.convert("RGB")
             img_orig = exif_transpose(img_orig)
+            img_orig = self.__upscale(img_orig)
             img_orig.thumbnail((1200, 1200))
             return np.array(img_orig)
 
