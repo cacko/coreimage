@@ -10,7 +10,7 @@ from coreimage.cli.interactive.models import TaskIcon
 from coreimage.organise import Concat
 from coreimage.cli.interactive.items import ConcatQuery, MenuItem, QueryTask
 from coreimage.version import __version__
-from coreimage.terminal import get_kitty_image, print_term_image
+from coreimage.terminal import print_term_image
 from coreimage.qrcode import get_qrcode
 from coreimage.transform import Cropper
 from coreimage.find import find_images
@@ -91,7 +91,8 @@ def cli_icat(
     ip = Path(path)
     assert ip.exists()
     assert ip.is_file()
-    output = get_kitty_image(image_path=ip)
+    from coreimage.terminal.kitty import get_term_image
+    output = get_term_image(image_path=ip)
     print(output)
 
 
@@ -108,7 +109,8 @@ def cli_faces(
     try:
         faces_path = crop.show_faces()
         assert faces_path
-        with get_kitty_image(image_path=faces_path, height=40) as t_image:
+        from coreimage.terminal.kitty import get_term_image
+        with get_term_image(image_path=faces_path, height=40) as t_image:
             print(t_image)
     except AssertionError:
         logging.error("No faces found")
