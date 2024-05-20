@@ -1,6 +1,5 @@
-from term_image.image import KittyImage
 from pathlib import Path
-from typing import Any, Generator, Optional
+from typing import Generator, Optional
 import cv2
 import numpy as np
 from PIL import Image
@@ -12,6 +11,8 @@ def get_image(
     **kwds
 ) -> Generator[Image.Image, None, None]:
     try:
+        from term_image.image import KittyImage
+        assert KittyImage.is_supported()
         match(image_data):
             case Image.Image():
                 yield KittyImage(image=image_data.convert("RGB"),  **kwds)
@@ -19,6 +20,8 @@ def get_image(
                 yield KittyImage(image=Image.fromarray(cv2.cvtColor(image_data, cv2.COLOR_BGR2RGB)), **kwds)
             case Path():
                 yield KittyImage(image=Image.open(image_data.as_posix()).convert("RGB"),  **kwds)
+    except (AssertionError, ValueError):
+        raise NotImplementedError("kirtty is not support on this termianl")
     finally:
         pass
 

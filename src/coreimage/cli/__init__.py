@@ -9,6 +9,7 @@ from coreimage.cli.interactive.menu import Menu
 from coreimage.cli.interactive.models import TaskIcon
 from coreimage.organise import Concat
 from coreimage.cli.interactive.items import ConcatQuery, MenuItem, QueryTask
+from coreimage.terminal.kitty import get_term_image
 from coreimage.version import __version__
 from coreimage.terminal import print_term_image
 from coreimage.qrcode import get_qrcode
@@ -139,11 +140,11 @@ def cli_cropface(
     try:
         faces_path = crop.show_faces()
         assert faces_path
-        with get_kitty_image(image_path=faces_path, height=20) as t_image:
+        with get_term_image(image_path=faces_path, height=20) as t_image:
             print(t_image)
         crop_path = crop.crop(face_idx=face_index, out=output)
         assert crop_path
-        with get_kitty_image(image_path=crop_path, height=20) as t_image:
+        with get_term_image(image_path=crop_path, height=20) as t_image:
             print(t_image)
     except AssertionError:
         logging.error("No faces found")
