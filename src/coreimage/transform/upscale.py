@@ -2,10 +2,9 @@ import logging
 import os
 from PIL import Image
 from pathlib import Path
-from typing import Optional, Any
+from typing import Optional
 import torch
 from PIL.ExifTags import Base as TagNames
-from corefile import TempPath
 from spandrel import ImageModelDescriptor, ModelLoader
 import torch
 from torchvision.transforms.functional import to_pil_image, to_tensor
@@ -30,7 +29,7 @@ class UpscaleMeta(type):
         model.eval()
         return model
 
-    def __call__(cls, *args: Any, **kwds: Any) -> Any:
+    def __call__(cls, *args: any, **kwds: any):
         return type.__call__(cls, *args, **kwds)
 
     @property

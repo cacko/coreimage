@@ -6,7 +6,7 @@ from segno.helpers import (
     make_vcard_data,
     make_wifi_data
 )
-from typing import Optional, Any
+from typing import Optional
 from PIL import Image
 from io import BytesIO
 
@@ -27,7 +27,7 @@ class Code:
 
     def __init__(
         self,
-        content: Any,
+        content: any,
         scale=16,
         border=4,
         error: Optional[ERROR] = None
