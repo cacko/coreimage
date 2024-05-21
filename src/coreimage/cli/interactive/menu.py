@@ -1,5 +1,5 @@
 import os
-from typing import Optional
+from typing import Any, Optional
 
 from prompt_toolkit.styles.pygments import style_from_pygments_cls
 from pygments.styles import get_style_by_name
@@ -19,7 +19,7 @@ class MenuMeta(type):
     _instances: dict[str, "Menu"] = {}
     _yaml: dict = {}
 
-    def __call__(self, items: list[MT], *args, **kwds: any):
+    def __call__(self, items: list[MT], *args, **kwds: Any):
         return type.__call__(self, items, *args, **kwds)
 
     @property
@@ -35,7 +35,7 @@ class Menu(object, metaclass=MenuMeta):
     _items: list = []
     _title: str = "What you want?"
     _parent: Optional[MenuItem] = None
-    _options: dict[str, any]
+    _options: dict[str, Any]
 
     def __init__(self, items: list[MT], title=None, **kwds) -> None:
         self._items = list(items)

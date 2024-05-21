@@ -2,7 +2,7 @@ import logging
 import os
 from PIL import Image
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 import torch
 from PIL.ExifTags import Base as TagNames
 from spandrel import ImageModelDescriptor, ModelLoader
@@ -29,7 +29,7 @@ class UpscaleMeta(type):
         model.eval()
         return model
 
-    def __call__(cls, *args: any, **kwds: any):
+    def __call__(cls, *args: Any, **kwds: Any):
         return type.__call__(cls, *args, **kwds)
 
     @property
