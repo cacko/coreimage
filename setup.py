@@ -64,6 +64,6 @@ setup(
     package_data={"coreimage.resources": ["*"]},
     entry_points="""
         [console_scripts]
-        ivan=coreimage.cli:cli
+        coreimage=coreimage.cli:cli
     """,
 )
