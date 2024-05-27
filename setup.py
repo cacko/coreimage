@@ -52,7 +52,7 @@ setup(
         "term-image>=0.8.0.1",
         "segno>=1.5.2",
         "spandrel>0.2",
-        "facenet-pytorch>=2.6.0",
+        "facenet-pytorch>=20.5.2",
         "transformers>=4.41.1",
         "torch>=2.2.2",
         "torchvision>=0.17.2"
