@@ -1,4 +1,5 @@
 import logging
+from re import ASCII
 from typing import Optional
 from uuid import uuid4
 from PIL import Image
@@ -157,24 +158,32 @@ class Cropper:
         out = TempPath(f"{uuid4()}.png")
         cv2.imwrite(out.as_posix(), cv2.cvtColor(faces_image, cv2.COLOR_BGR2RGB))
         return out
+    
 
-    def crop(self, face_idx: Optional[int] = 0, out: Optional[Path] = None) -> Path:
+    def crop(self, face_idx: Optional[int] = None, out: Optional[Path] = None) -> Path:
         if not out:
             out = self.img_path.parent / f"{self.img_path.stem}_crop.jpg"
 
         faces = self.faces
 
-        if not len(faces):
+        try:
+            assert len(faces)
+        except AssertionError:
             return None
 
-        if not face_idx:
+
+        try:
+            assert isinstance(face_idx, int)
+            assert faces[face_idx]
+        except (AssertionError, IndexError):
             idx_by_size = list(
-                map(
-                    lambda fs: fs[0],
-                    sorted(enumerate(faces), key=lambda ff: ff[1][2] * ff[1][3]),
-                )
+            map(
+                lambda fs: fs[0],
+                sorted(enumerate(faces), key=lambda ff: ff[1][2] * ff[1][3]),
+            )
             )
             face_idx = idx_by_size[-1]
+
 
         x, y, w, h = faces.pop(face_idx)
         if self.blur:

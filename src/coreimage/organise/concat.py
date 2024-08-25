@@ -1,4 +1,5 @@
 
+from genericpath import exists
 import json
 from typing import Optional
 from coreimage.find import find_images
@@ -12,6 +13,14 @@ from operator import itemgetter
 from hashlib import sha1
 from random import randint, shuffle as random_shuffle
 from PIL.ExifTags import Base as TagNames
+from pydantic import BaseModel
+
+class ConcatImage(BaseModel):
+    img_path: Path
+    width: int
+    height: int
+    row: int
+    col: int
 
 
 
@@ -145,7 +154,6 @@ class Concat:
             background += tuple([255])
         outImg = Image.new("RGBA", (w, h), background)
         xPos, yPos = (0, 0)
-
         for row in imgRows:
             row_fragments = []
             for img in row:
@@ -154,6 +162,10 @@ class Concat:
                 xPos += img.width + spacing
                 fragment.append(xPos)
                 row_fragments.append(fragment)
+                outpath = self.output_path.parent / f"{self.output_path.name}_images" / f"{xPos}-{yPos}.webp"
+                if not outpath.parent.exists():
+                    outpath.parent.mkdir(parents=True, exist_ok=True)
+                img.save(outpath)
                 continue
             yPos += max([img.height for img in row]) + spacing
             fragments += [[*rf, yPos] for rf in row_fragments]
