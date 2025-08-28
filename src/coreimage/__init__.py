@@ -1,4 +1,5 @@
 __name__ = "coreimage"
+__version__ = "0.1.1"
 
 import corelog
 import os

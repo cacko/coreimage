@@ -28,7 +28,14 @@ tasks:
     desc: build
     cmds:
       - rm -rf dist/*
-      - mamba run --live-stream -n {{.PROJECT}} python setup.py bdist_wheel
+      - mamba run -n {{.PROJECT}} python  -m build
+
+  install:
+    desc: install
+    cmds:
+      - task: build
+      - find dist -type f -name "*.whl" | head -n 1 | xargs pip install
+
 
   publish:
     desc: publish
