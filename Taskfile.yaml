@@ -9,7 +9,7 @@ tasks:
   default:
     dir: src/
     cmds:
-      - mamba run --live-stream -n {{.PROJECT}} python -m {{.PROJECT}} {{.CLI_ARGS}}
+      - mamba run -n {{.PROJECT}} python -m {{.PROJECT}} {{.CLI_ARGS}}
     silent: true
 
   export:

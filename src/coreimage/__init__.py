@@ -1,5 +1,7 @@
 __name__ = "coreimage"
-__version__ = "0.1.1"
+__version__ = "0.1.2"
+import warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning) 
 
 import corelog
 import os

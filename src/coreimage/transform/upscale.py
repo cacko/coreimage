@@ -11,8 +11,6 @@ from torchvision.transforms.functional import to_pil_image, to_tensor
 from coreimage.resources import (
     UPSCALE_ESRGAN_4x,
     UPSCALE_REALESRGAN_x2,
-    
-
 )
 
 class UpscaleMeta(type):
@@ -22,7 +20,7 @@ class UpscaleMeta(type):
     }
 
     def get_upscaler(cls, scale: int) -> ImageModelDescriptor:
-        model_path = cls.__models[scale]
+        model_path = cls.__models.get(scale, UPSCALE_REALESRGAN_x2)
         logging.debug(model_path)
         model = ModelLoader().load_from_file(model_path.as_posix())
         model.to(cls.device)
@@ -66,9 +64,8 @@ class Upscale(object, metaclass=UpscaleMeta):
         return ex
 
     def do_upscale(self, src: Path, dst: Path, **kwds) -> bool:
-        scale = kwds.get("scale", 4)
+        scale = kwds.get("scale", 2)
         low_res_img = Image.open(src.as_posix()).convert("RGB")
-
         upscaled = self.do_upscale_img(low_res_img, scale=scale)
 
         prompt = None

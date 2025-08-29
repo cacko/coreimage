@@ -93,6 +93,7 @@ def cli_icat(
     assert ip.exists()
     assert ip.is_file()
     from coreimage.terminal.kitty import get_term_image
+
     output = get_term_image(image_path=ip)
     print(output)
 
@@ -111,6 +112,7 @@ def cli_faces(
         faces_path = crop.show_faces()
         assert faces_path
         from coreimage.terminal.kitty import get_term_image
+
         with get_term_image(image_path=faces_path, height=40) as t_image:
             print(t_image)
     except AssertionError:
@@ -177,15 +179,17 @@ def cli_qrcode(
 @cli.command("upscale")
 @click.argument("path", type=Path)
 @click.option("-o", "--output", type=Path)
-@click.option("-s", "--scale", type=int)
+@click.option("-s", "--scale", type=int, default=2)
 def cli_upscale(
     path: Path,
-    scale: int = 2,
+    scale: int,
     output: Optional[Path] = None,
 ):
     for img_path in find_images([path]):
         try:
-            upscaled_path = Upscale.upscale(src_path=img_path, dst_path=output, scale=scale)
+            upscaled_path = Upscale.upscale(
+                src_path=img_path, dst_path=output, scale=scale
+            )
             assert upscaled_path
             logging.info(f"Upscaled result / {upscaled_path}")
             print_term_image(image_path=upscaled_path, height=30)
