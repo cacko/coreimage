@@ -1,5 +1,5 @@
 __name__ = "coreimage"
-__version__ = "0.1.2"
+__version__ = "0.1.5"
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning) 
 
