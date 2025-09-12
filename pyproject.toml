@@ -42,3 +42,6 @@ coreimage = "coreimage.cli:cli"
 
 [tool.setuptools.dynamic]
 version = { attr = "coreimage.__version__" }
+
+[tool.setuptools.package-data]
+"*" = ["*.pth"]

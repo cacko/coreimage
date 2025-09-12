@@ -27,6 +27,7 @@ tasks:
   build:
     desc: build
     cmds:
+      - rm -rf build
       - rm -rf dist/*
       - mamba run -n {{.PROJECT}} python  -m build
 
