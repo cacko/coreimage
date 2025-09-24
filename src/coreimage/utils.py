@@ -3,27 +3,41 @@ from itertools import filterfalse
 from PIL import Image
 import cv2
 import numpy as np
+from functools import lru_cache
+
 
 
 class IMAGE_EXT(StrEnum):
     JPEG = "jpg"
     PNG = "png"
     WEBP = "webp"
-
+    
+    @lru_cache
+    @staticmethod
+    def supported():
+        exts = Image.registered_extensions()
+        return [ex for ex, f in exts.items() if f in Image.OPEN]
+    
     @classmethod
     def get_suffixes(cls) -> list[str]:
-        return [f".{ex}" for ex in cls.__members__.values()]
+        return cls.supported()
+
 
     @classmethod
     def is_allowed(cls, ext: str) -> bool:
-        return ext.lower().lstrip(".") in cls.__members__.values()
+        return f'.{ext.lower().lstrip(".")}' in cls.supported()
 
     @classmethod
     def endwith(cls, fname: str) -> bool:
-        return next(
-            filterfalse(lambda e: fname.lower().endswith(e), cls.__members__.values()),
-            None
-        ) is not None
+        return (
+            next(
+                filterfalse(
+                    lambda e: fname.lower().endswith(e), cls.supported()
+                ),
+                None,
+            )
+            is not None
+        )
 
 
 def pil_to_mat(pil_img: Image.Image) -> cv2.Mat:
@@ -34,12 +48,12 @@ def pil_to_mat(pil_img: Image.Image) -> cv2.Mat:
 
 def chunks(lst, n):
     for i in range(0, len(lst), n):
-        yield lst[i:i + n]
+        yield lst[i : i + n]
 
 
 def nearest_bytes(n):
-    p = int(float(n).hex().split('p+')[1]) + 1
-    return 2 ** p
+    p = int(float(n).hex().split("p+")[1]) + 1
+    return 2**p
 
 
 def round8(a):

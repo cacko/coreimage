@@ -25,8 +25,8 @@ dependencies = [
     "pygments>=2.15.1",
     "emoji>=2.4.0",
     "pydantic>=2.7.1",
-    "corelog>0.0.15",
-    "corefile>=0.1.6",
+    "corelog>0.0.22",
+    "corefile>=0.1.13",
     "corestring>=0.3.6",
     "term-image>=0.8.0.1",
     "segno>=1.5.2",
@@ -35,7 +35,8 @@ dependencies = [
     "transformers>=4.41.1",
     "torch>=2.2.2",
     "torchvision>=0.17.2",
-    "cytoolz==1.0.1"
+    "cytoolz==1.0.1",
+    "olefile>=0.47",
 ]
 [project.scripts]
 coreimage = "coreimage.cli:cli"
