@@ -163,3 +163,5 @@ cython_debug/
 *.webp
 test/
 t.py
+version.txt
+.DS_Store
