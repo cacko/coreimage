@@ -36,6 +36,7 @@ dependencies = [
     "torchvision>=0.17.2",
     "cytoolz>=1.0.1",
     "olefile>=0.47",
+    "six>=1.17"
 ]
 [project.scripts]
 coreimage = "coreimage.cli:cli"

@@ -3,96 +3,79 @@ channels:
   - conda-forge
 dependencies:
   - bzip2=1.0.8
-  - ca-certificates=2024.2.2
-  - libexpat=2.6.2
-  - libffi=3.4.2
-  - libsqlite=3.45.3
-  - libzlib=1.2.13
+  - ca-certificates=2025.8.3
+  - icu=75.1
+  - libexpat=2.7.1
+  - libffi=3.4.6
+  - liblzma=5.8.1
+  - libsqlite=3.50.4
+  - libzlib=1.3.1
   - ncurses=6.5
-  - openssl=3.3.0
-  - pip=24.0
-  - python=3.11.9
+  - openssl=3.5.3
+  - pip=25.2
+  - python=3.12.11
   - readline=8.2
+  - setuptools=80.9.0
   - tk=8.6.13
-  - tzdata=2024a
-  - wheel=0.43.0
-  - xz=5.2.6
+  - tzdata=2025b
+  - wheel=0.45.1
   - pip:
-      - absl-py==2.1.0
-      - annotated-types==0.6.0
+      - annotated-types==0.7.0
       - appdirs==1.4.4
-      - attrs==23.2.0
+      - beautifulsoup4==4.13.5
       - better-exceptions==0.3.3
       - build==1.3.0
-      - certifi==2023.11.17
-      - cffi==1.16.0
-      - charset-normalizer==3.3.2
-      - click==8.1.7
+      - certifi==2025.8.3
+      - charset-normalizer==3.4.3
+      - checksumdir==1.3.0
+      - click==8.3.0
       - colorama==0.4.6
-      - contourpy==1.2.0
-      - corefile==0.1.5
-      - corelog==0.0.15
-      - corestring==0.3.7
-      - cycler==0.12.1
+      - corefile==0.1.14
+      - corelog==0.0.22
+      - corestring==0.3.19
       - cytoolz==1.0.1
-      - einops==0.7.0
-      - emoji==2.10.0
-      - facenet-pytorch==2.6.0
-      - filelock==3.13.1
-      - flatbuffers==23.5.26
-      - fonttools==4.48.1
-      - fs==2.4.16
-      - fsspec==2023.12.2
-      - huggingface-hub==0.23.1
-      - idna==3.6
-      - jinja2==3.1.3
-      - kiwisolver==1.4.5
-      - markdown-it-py==3.0.0
-      - markupsafe==2.1.4
-      - matplotlib==3.8.2
+      - einops==0.8.1
+      - emoji==2.15.0
+      - facenet-pytorch==20.5.2
+      - filelock==3.19.1
+      - fs==20.4.16
+      - fsspec==2025.9.0
+      - idna==3.10
+      - jinja2==3.1.6
+      - markdown-it-py==4.0.0
+      - markupsafe==3.0.2
       - mdurl==0.1.2
       - mpmath==1.3.0
-      - networkx==3.2.1
-      - numpy==1.26.4
-      - opencv-contrib-python==4.9.0.80
-      - opencv-python==4.9.0.80
-      - packaging==23.2
-      - pillow==10.2.0
-      - prompt-toolkit==3.0.36
-      - protobuf==3.20.3
-      - pycparser==2.21
-      - pydantic==2.7.1
-      - pydantic-core==2.18.2
-      - pyfiglet==1.0.2
-      - pygments==2.17.2
-      - pyparsing==3.1.1
+      - networkx==3.5
+      - numpy==2.2.6
+      - opencv-python==4.12.0.88
+      - packaging==25.0
+      - pillow==11.3.0
+      - prompt-toolkit==3.0.52
+      - pydantic==2.11.9
+      - pydantic-core==2.33.2
+      - pyfiglet==1.0.4
+      - pygments==2.19.2
       - pyproject-hooks==1.2.0
-      - python-dateutil==2.8.2
-      - pyyaml==6.0.1
-      - questionary==2.0.1
-      - regex==2023.12.25
-      - requests==2.31.0
-      - rich==13.7.0
-      - safetensors==0.4.2
-      - segno==1.6.0
-      - semver==3.0.2
-      - setuptools==80.9.0
-      - shellingham==1.5.4
-      - six==1.16.0
-      - sounddevice==0.4.6
-      - spandrel==0.2.1
+      - questionary==2.1.1
+      - requests==2.32.5
+      - rich==14.1.0
+      - safetensors==0.6.2
+      - segno==1.6.6
+      - semver==3.0.4
+      - six==1.17.0
+      - soupsieve==2.8
+      - spandrel==0.4.1
       - stringcase==1.2.0
-      - structlog==24.1.0
-      - sympy==1.12
-      - term-image==0.18.0.1
-      - tokenizers==0.19.1
+      - structlog==25.4.0
+      - sympy==1.14.0
+      - term-image==0.8.0.3
       - toolz==1.0.0
-      - torch==2.2.2
-      - torchvision==0.17.2
-      - tqdm==4.66.2
-      - transformers==4.41.1
-      - typer==0.12.1
-      - typing-extensions==4.9.0
-      - urllib3==2.1.0
-      - wcwidth==0.2.13
+      - torch==2.8.0
+      - torchvision==0.23.0
+      - tqdm==4.67.1
+      - typing-extensions==4.15.0
+      - typing-inspection==0.4.1
+      - urllib3==2.5.0
+      - wcwidth==0.2.14
 prefix: /Volumes/Devo/Users/jago/miniforge3/envs/coreimage
