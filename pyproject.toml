@@ -1,6 +1,6 @@
 [build-system]
 build-backend = "setuptools.build_meta"
-requires = ["setuptools>=61.0", "setuptools_scm", "build"]
+requires = ["setuptools<81", "setuptools_scm", "build"]
 
 [project]
 authors = [{ name = "coreimage", email = "alex@cacko.net" }]

@@ -1,5 +1,7 @@
 __name__ = "coreimage"
 import warnings
+from importlib.metadata import version, PackageNotFoundError
+__version__ = version(__name__)
 warnings.filterwarnings("ignore", category=DeprecationWarning) 
 
 import corelog

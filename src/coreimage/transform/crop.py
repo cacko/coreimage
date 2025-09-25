@@ -112,7 +112,7 @@ class Cropper:
             try:
                 mtcnn = MTCNN(image_size=640)
                 boxes, _ = mtcnn.detect(self.image)
-                assert len(boxes)
+                assert boxes
 
                 def face_box(box):
                     margin = [
@@ -139,7 +139,7 @@ class Cropper:
     def show_faces(self) -> Path:
         faces = self.faces
 
-        assert faces
+        assert len(faces)
 
         faces_image = self.image.copy()
         for idx, (x, y, w, h) in enumerate(faces):
