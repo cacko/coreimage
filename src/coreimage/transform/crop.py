@@ -112,7 +112,8 @@ class Cropper:
             try:
                 mtcnn = MTCNN(image_size=640)
                 boxes, _ = mtcnn.detect(self.image)
-                assert boxes
+                assert boxes is not None
+                assert len(boxes)
 
                 def face_box(box):
                     margin = [
