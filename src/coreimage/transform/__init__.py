@@ -4,11 +4,14 @@ from PIL import Image, ImageOps
 from coreimage.utils import round8
 from .crop import Cropper
 from .upscale import Upscale
+from typing import Optional
+from corefile import TempPath
 
 __all__ = [
     "normalize",
     "Cropper",
-    "Upscale"
+    "Upscale",
+    "convert"
 ]
 
 
@@ -26,3 +29,14 @@ def normalize(
         max_size = round8(max_size)
         im.thumbnail((max_size, max_size))
         yield im
+
+def convert_to(
+    pth: Path,
+    format: str
+):
+    im = Image.open(pth.as_posix())
+    tmp = TempPath(f"{pth.stem}.{format}")
+    im.save(tmp.as_posix())
+    return tmp
+        
+        

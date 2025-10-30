@@ -4,24 +4,32 @@ from PIL import Image
 import cv2
 import numpy as np
 from functools import lru_cache
+from typing import Optional
 
+
+def resize_set(arg: str) -> Optional[tuple]:
+    try:
+        parts = arg.split("x",1)
+        assert len(parts) == 2
+        return tuple([int(x) for x in parts])
+    except Exception:
+        return None
 
 
 class IMAGE_EXT(StrEnum):
     JPEG = "jpg"
     PNG = "png"
     WEBP = "webp"
-    
+
     @lru_cache
     @staticmethod
     def supported():
         exts = Image.registered_extensions()
         return [ex for ex, f in exts.items() if f in Image.OPEN]
-    
+
     @classmethod
     def get_suffixes(cls) -> list[str]:
         return cls.supported()
-
 
     @classmethod
     def is_allowed(cls, ext: str) -> bool:
@@ -31,9 +39,7 @@ class IMAGE_EXT(StrEnum):
     def endwith(cls, fname: str) -> bool:
         return (
             next(
-                filterfalse(
-                    lambda e: fname.lower().endswith(e), cls.supported()
-                ),
+                filterfalse(lambda e: fname.lower().endswith(e), cls.supported()),
                 None,
             )
             is not None

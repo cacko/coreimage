@@ -12,9 +12,10 @@ from coreimage.terminal.kitty import get_term_image
 from coreimage import __version__
 from coreimage.terminal import print_term_image
 from coreimage.qrcode import get_qrcode
-from coreimage.transform import Cropper
+from coreimage.transform import Cropper, convert_to
 from coreimage.find import find_images
 from coreimage.transform import Upscale
+from coreimage.utils import IMAGE_EXT, resize_set
 
 
 def banner(txt: str, color: str = "bright_green"):
@@ -175,19 +176,41 @@ def cli_qrcode(
     print_term_image(image=code_image, height=20)
 
 
+@cli.command("convert", short_help="convert")
+@click.argument("path", type=Path)
+@click.option("-f", "--format", type=click.Choice[IMAGE_EXT.supported()], required=True)
+@click.option("-o", "--output", type=Path)
+def cli_convert(path: Path, format: str, output: Optional[Path] = None):
+    for img_path in find_images([path]):
+        try:
+            o_root = output if output else img_path.parent
+            converted_path = convert_to(img_path, format=format)
+            result_path = o_root / f"{img_path.stem}.{format}"
+            converted_path.rename(result_path)
+            logging.info(
+                f"Converted from {img_path.suffix} to {format} / {converted_path}"
+            )
+        except Exception as e:
+            logging.exception(e)
+
+
 @cli.command("upscale")
 @click.argument("path", type=Path)
 @click.option("-o", "--output", type=Path)
 @click.option("-s", "--scale", type=int, default=2)
+@click.option("-rz", "--resize", type=str)
+@click.option("-f", "--format", type=click.Choice[IMAGE_EXT.supported()])
 def cli_upscale(
     path: Path,
     scale: int,
     output: Optional[Path] = None,
+    resize: Optional[str] = None,
+    format: Optional[str] = None,
 ):
     for img_path in find_images([path]):
         try:
             upscaled_path = Upscale.upscale(
-                src_path=img_path, dst_path=output, scale=scale
+                src_path=img_path, dst_path=output, scale=scale, resize=resize_set(resize)
             )
             assert upscaled_path
             logging.info(f"Upscaled result / {upscaled_path}")
