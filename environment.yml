@@ -30,7 +30,7 @@ dependencies:
       - checksumdir==1.3.0
       - click==8.3.0
       - colorama==0.4.6
-      - corefile==0.1.14
+      - corefile==0.1.17
       - corelog==0.0.22
       - corestring==0.3.19
       - cytoolz==1.0.1
