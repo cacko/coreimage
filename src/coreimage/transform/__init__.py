@@ -6,12 +6,14 @@ from .crop import Cropper
 from .upscale import Upscale
 from typing import Optional
 from corefile import TempPath
+from .background import RemoveBackground
 
 __all__ = [
     "normalize",
     "Cropper",
     "Upscale",
-    "convert"
+    "convert",
+    "remove_background"
 ]
 
 
@@ -39,4 +41,8 @@ def convert_to(
     im.save(tmp.as_posix())
     return tmp
         
-        
+def remove_background(
+    image: Image.Image|Path
+) -> Image.Image:
+    remover = RemoveBackground()
+    return remover.remove_background(image)

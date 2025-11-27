@@ -5,6 +5,14 @@ import cv2
 import numpy as np
 from functools import lru_cache
 from typing import Optional
+import torch
+
+DEVICE = torch.device("cpu")
+
+if torch.cuda.is_available():
+    DEVICE = torch.device("cuda")
+elif torch.backends.mps.is_available():
+    DEVICE = torch.device("mps")
 
 
 def resize_set(arg: str) -> Optional[tuple]:

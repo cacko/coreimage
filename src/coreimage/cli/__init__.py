@@ -12,7 +12,7 @@ from coreimage.terminal.kitty import get_term_image
 from coreimage import __version__
 from coreimage.terminal import print_term_image
 from coreimage.qrcode import get_qrcode
-from coreimage.transform import Cropper, convert_to
+from coreimage.transform import Cropper, convert_to, remove_background
 from coreimage.find import find_images
 from coreimage.transform import Upscale
 from coreimage.utils import IMAGE_EXT, resize_set
@@ -215,6 +215,27 @@ def cli_upscale(
             assert upscaled_path
             logging.info(f"Upscaled result / {upscaled_path}")
             print_term_image(image_path=upscaled_path, height=30)
+        except Exception as e:
+            logging.exception(e)
+
+@cli.command("remove-background")
+@click.argument("path", type=Path)
+@click.option("-o", "--output", type=Path)
+def cli_remove_background(
+    path: Path,
+    output: Optional[Path] = None,
+):
+    for img_path in find_images([path]):
+        try:
+            nobg_image = remove_background(
+                image=img_path
+            )
+            assert nobg_image
+            o_root = output if output else img_path.parent
+            final_path = o_root / f"nobg_{img_path.stem}.png"
+            nobg_image.save(final_path.as_posix())
+            logging.info(f"Removed background / {final_path}")
+            print_term_image(image_path=final_path, height=30)
         except Exception as e:
             logging.exception(e)
 
