@@ -67,7 +67,8 @@ class Upscale(object, metaclass=UpscaleMeta):
         scale = kwds.get("scale", 2)
         low_res_img = Image.open(src.as_posix()).convert("RGB")
         upscaled = self.do_upscale_img(low_res_img, scale=scale)
-        if "resize" in kwds:
+        if all(["resize" in kwds, kwds.get("resize") is not None]):
+            logging.info(f"resize {kwds.get('resize')} is set, resizing the upscaled image")
             upscaled = upscaled.resize(kwds.get("resize"))
         prompt = None
         try:

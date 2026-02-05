@@ -210,13 +210,18 @@ def cli_upscale(
     for img_path in find_images([path]):
         try:
             upscaled_path = Upscale.upscale(
-                src_path=img_path, dst_path=output, scale=scale, resize=resize_set(resize)
+                src_path=img_path,
+                dst_path=output,
+                scale=scale,
+                resize=resize_set(resize),
+                format=format,
             )
             assert upscaled_path
             logging.info(f"Upscaled result / {upscaled_path}")
             print_term_image(image_path=upscaled_path, height=30)
         except Exception as e:
             logging.exception(e)
+
 
 @cli.command("remove-background")
 @click.argument("path", type=Path)
@@ -227,9 +232,7 @@ def cli_remove_background(
 ):
     for img_path in find_images([path]):
         try:
-            nobg_image = remove_background(
-                image=img_path
-            )
+            nobg_image = remove_background(image=img_path)
             assert nobg_image
             o_root = output if output else img_path.parent
             final_path = o_root / f"nobg_{img_path.stem}.png"
